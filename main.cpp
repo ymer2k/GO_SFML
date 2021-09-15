@@ -1,6 +1,7 @@
 #include <SFML/Graphics.hpp>
 #include <iostream> // Needed for sf::Keyboard
 #include "Render.h"
+#include "Game.h"
 
 //Prototypes
 void runGame();
@@ -184,7 +185,7 @@ void oldMain()
 
 
 
-        // drawing code. //maybe only draw when board updates?
+        // drawing code.
         window.clear();
         window.draw(board);
 
@@ -279,8 +280,26 @@ bool isInsideArea(int x1, int y1, int x2,
 
 
 int main()
-{
+{    
     //oldMain();
+
+    Render World;
+    Game CurrentGame;
+
+
+    while (World.window.isOpen()) // THe main game loop
+    {
+        CurrentGame.interact(World.window); // handles interactions with the game.
+        World.window.clear();
+        World.window.display();
+
+
+    }
+
+
+
+
+
 
     return 0;
 }

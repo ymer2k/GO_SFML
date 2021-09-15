@@ -4,26 +4,27 @@
 class Render
 {
 
+
 public:
 	Render(); // Constructor
 	const int BOARD_SIZE = 9;
 	sf::RenderWindow window;
 	sf::View view;
 
-
+	// OBS apparently variables get intilialized (get a value) in the init list in the order that they are declared here. So since the window uses WINDOW_WIDTH
+	// But window is above WINDOW_WIDTH here then in the init list (if I had window in the init list) It would have been initialized with probably
+	// garbash values of WINDOW_WIDTH. SO do fix that, either have those variables higher up here than sf::RenderWindow window. Or just create the window (with the window.create() function)
+	// in the constructor AFTER the WINDOW_WIDTH variables have been initialized.
 private:
 	// Member functions
 	void initializeWorld();
 
 	// Member variables
-
-	
 	const int BORDER_X;
 	const int BORDER_Y;
-	const int WINDOW_WIDTH;
+	const int WINDOW_WIDTH; // Could also in the future pass this as arguments to render in the constructor as input arguments to decied or change resolution :)
 	const int WINDOW_HEIGHT;
 	const int BOARDER_SIZE;
-	//sf::Vector3i THStoneLocations[BOARD_SIZE][BOARD_SIZE]; // stores the pices locations. Have to use 3i because i want to save 3d coords into this vector. x, y and side :)
 	
 };
 

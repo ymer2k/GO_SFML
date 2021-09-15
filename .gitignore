@@ -1,5 +1,4 @@
 Debug
-*.dll
 Go_SFML.vcxproj
 Go_SFML.vcxproj.filters
 Go_SFML.vcxproj.user
