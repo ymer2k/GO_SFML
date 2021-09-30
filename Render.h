@@ -1,12 +1,19 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 
+// The renderer, should handle rendering objects and the window etc.
+// Render takes in objects to be drawn in the window.
+
 class Render
 {
 
 
 public:
 	Render(); // Constructor
+	// Member functions
+
+
+	// Member variables
 	const int BOARD_SIZE = 9;
 	sf::RenderWindow window;
 	sf::View view;

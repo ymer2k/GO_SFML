@@ -1,5 +1,7 @@
 #include <SFML/Graphics.hpp>
 #include <iostream> // Needed for sf::Keyboard
+#include <vector>
+
 #include "Render.h"
 #include "Game.h"
 
@@ -33,7 +35,7 @@ void oldMain()
 
 
     sf::Texture pieceTexture;
-    pieceTexture.loadFromFile("Sprites/Black_white.png");
+    pieceTexture.loadFromFile("Sprites/white_black.png");
 
     black.setTexture(&pieceTexture); //here we set the texture eventhough its the whole texture
     white.setTexture(&pieceTexture); //here we set the texture eventhough its the whole texture
@@ -283,15 +285,27 @@ int main()
 {    
     //oldMain();
 
-    Render World;
-    Game CurrentGame;
 
 
-    while (World.window.isOpen()) // THe main game loop
+
+
+
+
+    //return 0;
+    Render world;
+    Game currentgame;
+
+    // open main menu which is also the world.window but this time we will draw a menu instead. then when we click maybe size of the board etc it will close and we will open up the 
+    // "game window".
+    while (world.window.isOpen()) // the main game loop
     {
-        CurrentGame.interact(World.window); // handles interactions with the game.
-        World.window.clear();
-        World.window.display();
+        currentgame.interact(world.window); // handles interactions with the game.
+        //currentgame.makeMove(Stone::BLACK);
+        world.window.clear();
+        currentgame.drawGame(world.window);
+
+
+        world.window.display();
 
 
     }
