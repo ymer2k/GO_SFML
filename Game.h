@@ -2,6 +2,8 @@
 #include <SFML/Graphics.hpp>
 #include "Board.h"
 #include "Stone.h"
+#include "Textures.h"
+
 
 
 
@@ -36,9 +38,12 @@ private:
 	// Member variables
 	sf::Event event;
 	Board currentBoard;
-	Stone currentStone;
-	std::vector<std::vector<Stone>> stonePositions;
-	std::vector<Stone> stonePos2d;
+	//Stone currentStone;
+	//std::vector<std::vector<Stone>> stonePositions;
+	//std::vector<Stone> m_stonePos1d;
 	//std::vector<int> ju(currentBoard.getCurrentBoardSize());
+
+	Textures m_pieceTextures; // Later have input arguemnts that decides which type of texture to retrive.
+	//Textures m_boardTexture(Textures::TextureType::BOARD) Like this <-
 };
 

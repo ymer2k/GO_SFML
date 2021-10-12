@@ -1,5 +1,6 @@
 #pragma once
 #include "Location.h"
+#include "Textures.h"
 #include <SFML/Graphics.hpp>
 
 class Stone
@@ -17,6 +18,7 @@ public:
 
 	//Stone(color side, const Location& location); // A default constructor BECAUSE of the default consturctor the Stone vector will not be empty, it will be filled of these default Stones...
 	//How to avoid printing these default stones? Have a default NO_STONE value? and check if NO_STONE dont draw?
+	//Stone(Textures whiteAndBlackTexture, COLOR side = NO_STONE, int x = 0, int y = 0); // maybe stone should have an ID as well, stone 1 stone 2 etc.
 	Stone(COLOR side = NO_STONE, int x = 0, int y = 0); // maybe stone should have an ID as well, stone 1 stone 2 etc.
 
 
@@ -39,6 +41,7 @@ private:
 	// member variables
 	COLOR m_side;
 	Location m_location;
+	Textures m_stoneTextures; // an object that has a getter function that returns a pointer to the two stone textures.
 
 	sf::Texture m_pieceTexture;
 	sf::Vector2u m_pieceTextureSize;

@@ -302,6 +302,7 @@ int main()
         currentgame.interact(world.window); // handles interactions with the game.
         //currentgame.makeMove(Stone::BLACK);
         world.window.clear();
+        currentgame.makeMove(Stone::BLACK);
         currentgame.drawGame(world.window);
 
 
