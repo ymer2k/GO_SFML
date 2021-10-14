@@ -3,10 +3,10 @@
 
 
 //Stone::Stone(color side, const Location& location) : 
-//Stone::Stone(Textures whiteAndBlackTexture, COLOR side, int x, int y) :
-Stone::Stone(COLOR side, int x, int y) :
+Stone::Stone(Textures & whiteAndBlackTexture, COLOR side, int x, int y) :
+//Stone::Stone(COLOR side, int x, int y) :
 	m_location(x, y) // Instead of m_location(location) // Not used now
-//	,m_stoneTextures(whiteAndBlackTexture)
+	,m_stoneTextures(whiteAndBlackTexture)
 	,m_x(x)
 	,m_y(y)
 	,m_side(side)
@@ -16,11 +16,14 @@ Stone::Stone(COLOR side, int x, int y) :
 	,m_white(sf::Vector2f(19, 19))
 	,m_stone(sf::Vector2f(19, 19))
 {
-	 
-
+	
 
 	loadSprite();
 	setPosition();
+}
+
+Stone::Stone()
+{
 }
 
 
@@ -40,12 +43,18 @@ Stone::COLOR Stone::getSide()
 	return m_side;
 }
 
+void Stone::setSide(Stone::COLOR side)
+{
+	m_side = side;
+}
+
 
 
 void Stone::loadSprite()
 {
 	//m_pieceTexture.loadFromFile("Sprites/white_black.png");
 	//m_stone.setTexture(&m_pieceTexture); //here we set the texture eventhough its the whole texture
+		 
 	m_stone.setTexture(m_stoneTextures.getTexture());
 
 	m_pieceTextureSize = m_pieceTexture.getSize();

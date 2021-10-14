@@ -1,6 +1,5 @@
 #pragma once
 #include <SFML/Graphics.hpp>
-#include "Stone.h"
 
 
 class Textures
@@ -16,6 +15,7 @@ public:
 
 private:
 	sf::Texture m_pieceTexture;
+	sf::Texture *m_pieceTexture_p = new sf::Texture;
 
 };
 
