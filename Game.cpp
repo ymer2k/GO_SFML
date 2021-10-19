@@ -58,7 +58,7 @@ void Game::makeMove(Stone::COLOR side)
 
 void Game::createStone(Stone::COLOR side, int x, int y)
 {
-    Stone newStone(m_pieceTextures, side, x, y); // Do I just want to send a reference to this object here?
+    Stone newStone(&m_pieceTextures, side, x, y); // Do I just want to send a reference to this object here?
 
     // Copy newly created stone into StonePosition vector.
     //stonePositions[3][3] = newStone;

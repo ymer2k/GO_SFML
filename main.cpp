@@ -21,7 +21,7 @@ void oldMain()
     int side = 1; // white 1  black 2.
 
     sf::RenderWindow window(sf::VideoMode(800, 600), "Go");
-    int aspectRatio = 800 / 600;
+    float aspectRatio = 800.0f / 600.0f;
     int borderIncrease = 5;
     sf::View view = window.getView();
     view.setCenter(sf::Vector2f(200, 150));
@@ -35,7 +35,8 @@ void oldMain()
 
 
     sf::Texture pieceTexture;
-    pieceTexture.loadFromFile("Sprites/white_black.png");
+    pieceTexture.loadFromFile("Sprites/white_black.png"); //always loads sucefully
+    
 
     black.setTexture(&pieceTexture); //here we set the texture eventhough its the whole texture
     white.setTexture(&pieceTexture); //here we set the texture eventhough its the whole texture
@@ -48,8 +49,8 @@ void oldMain()
     pieceTextureSize.y /= 1; //because only one row :)
 
     //Get a sub texture from the collected texture Black_white.png
-    black.setTextureRect(sf::IntRect(pieceTextureSize.x, 0, pieceTextureSize.x, pieceTextureSize.y)); //First two parameters are the starting positions in the texture and the other two parameters are the size of the texture
     white.setTextureRect(sf::IntRect(0, 0, pieceTextureSize.x, pieceTextureSize.y));
+    black.setTextureRect(sf::IntRect(pieceTextureSize.x, 0, pieceTextureSize.x, pieceTextureSize.y)); //First two parameters are the starting positions in the texture and the other two parameters are the size of the texture
 
 
 
@@ -75,8 +76,6 @@ void oldMain()
 
     while (window.isOpen())
     {
-
-
 
         sf::Event event;
         while (window.pollEvent(event))
@@ -284,9 +283,6 @@ bool isInsideArea(int x1, int y1, int x2,
 int main()
 {    
     //oldMain();
-
-
-
 
 
 

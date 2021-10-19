@@ -15,7 +15,5 @@ public:
 
 private:
 	sf::Texture m_pieceTexture;
-	sf::Texture *m_pieceTexture_p = new sf::Texture;
-
 };
 
