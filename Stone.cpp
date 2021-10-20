@@ -2,11 +2,15 @@
 
 
 
+
+
 //Stone::Stone(color side, const Location& location) : 
-Stone::Stone(Textures * whiteAndBlackTexture, COLOR side, int x, int y) :
+//Stone::Stone(Textures * whiteAndBlackTexture, COLOR side, int x, int y) :
 //Stone::Stone(COLOR side, int x, int y) :
+Stone::Stone(TextureHolder &texture, COLOR side, int x, int y) :
 	m_location(x, y) // Instead of m_location(location) // Not used now
-	,m_stoneTextures(whiteAndBlackTexture)
+	//,m_stoneTextures(whiteAndBlackTexture)
+	,m_texture(texture)
 	,m_x(x)
 	,m_y(y)
 	,m_side(side)
@@ -16,14 +20,13 @@ Stone::Stone(Textures * whiteAndBlackTexture, COLOR side, int x, int y) :
 	,m_white(sf::Vector2f(19, 19))
 	,m_stone(sf::Vector2f(19, 19))
 {
-	
+
 	loadSprite();
 	setPosition();
 }
 
-Stone::Stone()
-{
-}
+
+
 
 
 
@@ -32,10 +35,17 @@ sf::RectangleShape Stone::getStone()
 	return m_stone;
 }
 
+sf::Sprite Stone::getStoneSprite()
+{
+	return m_stoneSprite;
+}
+
 Location Stone::getLocation()
 {
 	return m_location;
 }
+
+
 
 Stone::COLOR Stone::getSide()
 {
@@ -47,14 +57,28 @@ void Stone::setSide(Stone::COLOR side)
 	m_side = side;
 }
 
+void Stone::setSprite(Stone::COLOR side)
+{
+	if (side == BLACK)
+	{
+		m_stoneSprite.setTextureRect(sf::IntRect(m_pieceTextureSize.x, 0, m_pieceTextureSize.x, m_pieceTextureSize.y));
+	}
+	else
+		m_stoneSprite.setTextureRect(sf::IntRect(0, 0, m_pieceTextureSize.x, m_pieceTextureSize.y));
+}
+
 
 
 void Stone::loadSprite()
 {
 	//m_pieceTexture.loadFromFile("Sprites/white_black.png");
 	//m_stone.setTexture(&m_pieceTexture); //here we set the texture eventhough its the whole texture
-		 
-	m_stone.setTexture(m_stoneTextures->getTexture());
+	 
+	//For sprite 
+	m_pieceTexture = m_texture.get(TextureHolder::ID::Stone);
+	m_stoneSprite.setTexture(m_pieceTexture);
+
+	//m_stone.setTexture(m_stoneTextures->getTexture());
 
 	m_pieceTextureSize = m_pieceTexture.getSize();
 	//here we split the texture into pieces.
@@ -66,18 +90,28 @@ void Stone::loadSprite()
 	m_white.setTextureRect(sf::IntRect(0, 0, m_pieceTextureSize.x, m_pieceTextureSize.y));
 	m_black.setTextureRect(sf::IntRect(m_pieceTextureSize.x, 0, m_pieceTextureSize.x, m_pieceTextureSize.y)); //First two parameters are the starting positions in the texture and the other two parameters are the size of the texture
 
-	// Set stone depending on which side plays.
+	//// Set stone depending on which side plays.
+	//if (m_side == BLACK)
+	//{
+	//	m_stone.setTextureRect(sf::IntRect(m_pieceTextureSize.x, 0, m_pieceTextureSize.x, m_pieceTextureSize.y));
+	//}else
+	//	m_stone.setTextureRect(sf::IntRect(0, 0, m_pieceTextureSize.x, m_pieceTextureSize.y));
+
+	//SPRITE
+		// Set stone depending on which side plays.
 	if (m_side == BLACK)
 	{
-		m_stone.setTextureRect(sf::IntRect(m_pieceTextureSize.x, 0, m_pieceTextureSize.x, m_pieceTextureSize.y));
-	}else
-		m_stone.setTextureRect(sf::IntRect(0, 0, m_pieceTextureSize.x, m_pieceTextureSize.y));
-
+		m_stoneSprite.setTextureRect(sf::IntRect(m_pieceTextureSize.x, 0, m_pieceTextureSize.x, m_pieceTextureSize.y));
+	}
+	else
+		m_stoneSprite.setTextureRect(sf::IntRect(0, 0, m_pieceTextureSize.x, m_pieceTextureSize.y));
 }
 
 void Stone::setPosition()
 {
-	m_stone.setPosition(m_x, m_y);
+	
+	//m_stone.setPosition(m_x, m_y);
+	m_stoneSprite.setPosition(m_x, m_y);
 }
 
 // should use an instance of Location for the location OK

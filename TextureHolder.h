@@ -22,7 +22,7 @@ public:
 	void load(ID id, const std::string& filename);
 	// A get function to get the approprite texture depending on the ID we pass in.
 	sf::Texture& get(ID id);
-
+	//a const qualified overload 
 	const sf::Texture& get(ID id) const;
 
 private:

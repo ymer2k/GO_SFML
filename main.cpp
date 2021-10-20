@@ -10,6 +10,30 @@ void runGame();
 bool isInsideArea(int x1, int y1, int x2,
     int y2, int x, int y);
 
+void spriteTest()
+{
+    sf::RenderWindow window(sf::VideoMode(800, 600), "Go");
+    float aspectRatio = 800.0f / 600.0f;
+    int borderIncrease = 5;
+    sf::View view = window.getView();
+    view.setCenter(sf::Vector2f(200, 150));
+    view.setSize(sf::Vector2f(400 + borderIncrease * aspectRatio, 300 + borderIncrease));
+
+    sf::Texture pieceTexture;
+    pieceTexture.loadFromFile("Sprites/white_black.png"); //always loads sucefully
+
+    sf::Sprite sprite;
+    sprite.setTexture(pieceTexture);
+
+    sf::Vector2u pieceTextureSize = pieceTexture.getSize();
+    //here we split the texture into pieces.
+    pieceTextureSize.x /= 2;
+    pieceTextureSize.y /= 1; //because only one row :)
+
+    sprite.setTextureRect(sf::IntRect(0, 0, pieceTextureSize.x, pieceTextureSize.y));
+
+}
+
 void oldMain()
 {
     const int BORDER_X = 0;
@@ -43,6 +67,7 @@ void oldMain()
 
 
 
+
     sf::Vector2u pieceTextureSize = pieceTexture.getSize();
     //here we split the texture into pieces.
     pieceTextureSize.x /= 2;
@@ -52,6 +77,12 @@ void oldMain()
     white.setTextureRect(sf::IntRect(0, 0, pieceTextureSize.x, pieceTextureSize.y));
     black.setTextureRect(sf::IntRect(pieceTextureSize.x, 0, pieceTextureSize.x, pieceTextureSize.y)); //First two parameters are the starting positions in the texture and the other two parameters are the size of the texture
 
+     // sprite test
+    sf::Sprite sprite;
+    sprite.setTexture(pieceTexture);
+    sprite.setTextureRect(sf::IntRect(0, 0, pieceTextureSize.x, pieceTextureSize.y));
+    sprite.setPosition(20, 20);
+    ///
 
 
     player.setPosition(356, 206);
@@ -228,7 +259,7 @@ void oldMain()
 
         window.setView(view);
         window.draw(player);
-
+        //window.draw(sprite);
         window.display();
 
 
@@ -288,6 +319,7 @@ int main()
 
 
     //return 0;
+
     Render world;
     Game currentgame;
 
