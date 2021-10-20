@@ -75,12 +75,12 @@ void Stone::loadSprite()
 	//m_stone.setTexture(&m_pieceTexture); //here we set the texture eventhough its the whole texture
 	 
 	//For sprite 
-	m_pieceTexture = m_texture.get(TextureHolder::ID::Stone);
-	m_stoneSprite.setTexture(m_pieceTexture);
+	//m_pieceTexture = m_texture.get(TextureHolder::ID::Stone);
+	m_stoneSprite.setTexture(m_texture.get(TextureHolder::ID::Stone));
 
 	//m_stone.setTexture(m_stoneTextures->getTexture());
 
-	m_pieceTextureSize = m_pieceTexture.getSize();
+	m_pieceTextureSize = m_texture.get(TextureHolder::ID::Stone).getSize();
 	//here we split the texture into pieces.
 	m_pieceTextureSize.x /= 2;
 	m_pieceTextureSize.y /= 1; //because only one row :)
