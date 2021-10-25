@@ -1,10 +1,10 @@
 #pragma once
-class gameLogic
+class GameLogic
 {
 
 
 public:
-	gameLogic(); // Constructor
+	GameLogic(); // Constructor
 
 	// Methods
 	void rungame(); // Runs the main game loop;

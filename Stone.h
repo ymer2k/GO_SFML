@@ -33,12 +33,13 @@ public:
 	COLOR getSide();
 	void setSide(Stone::COLOR side);
 	void setSprite(Stone::COLOR side);
+	void setPosition(int x, int y);
 
 
 private:
 	// member functions
 	void loadSprite();
-	void setPosition();
+
 
 	// member variables
 	COLOR m_side;

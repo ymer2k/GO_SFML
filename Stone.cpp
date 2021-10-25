@@ -22,7 +22,7 @@ Stone::Stone(TextureHolder &texture, COLOR side, int x, int y) :
 {
 
 	loadSprite();
-	setPosition();
+	setPosition(m_x,m_y);
 }
 
 
@@ -107,11 +107,12 @@ void Stone::loadSprite()
 		m_stoneSprite.setTextureRect(sf::IntRect(0, 0, m_pieceTextureSize.x, m_pieceTextureSize.y));
 }
 
-void Stone::setPosition()
+void Stone::setPosition(int x, int y)
 {
-	
+	m_x = x;
+	m_y = y;
 	//m_stone.setPosition(m_x, m_y);
-	m_stoneSprite.setPosition(m_x, m_y);
+	m_stoneSprite.setPosition(x, y);
 }
 
 // should use an instance of Location for the location OK

@@ -4,7 +4,7 @@
 #include "Stone.h"
 #include "Textures.h"
 #include "TextureHolder.h"
-
+#include "GameLogic.h"
 
 
 
@@ -34,16 +34,19 @@ private:
 	void drawStones(sf::RenderWindow& window);
 	 // Function to create new stone objects ( with position and side and save into the vector)
 	void createStone(Stone::COLOR side, int x, int y);
+	// Goes through all squares on the board and checks which one we clicked in
 
 
 
 	// Member variables
 	sf::Event event;
 	Board currentBoard;
+	// use gamelogic to call funcitons in gamelogic that will return stuff I need. forexample yes it was a valid move etc.
+	// the functions I call will have to take in Game object to get the info it needs to calculate teh stuff to return. And maybe Board too.
+	GameLogic gameLogic;
+
 	//Stone currentStone;
-	//std::vector<std::vector<Stone>> stonePositions;
-	std::vector<Stone> m_stonePos1d;
-	//std::vector<int> ju(currentBoard.getCurrentBoardSize());
+	std::vector<std::vector<Stone>> m_stonePositions2d;
 
 	Textures m_pieceTextures; // Later have input arguemnts that decides which type of texture to retrive. Game should handle all Texture objects (long Scope)
 	//Textures m_boardTexture(Textures::TextureType::BOARD) Like this <-
