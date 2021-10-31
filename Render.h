@@ -1,8 +1,13 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 
-// The renderer, should handle rendering objects and the window etc.
-// Render takes in objects to be drawn in the window.
+/*
+
+ This class should handle rendering objects and the window etc.
+ Render takes in objects to be drawn in the window.
+
+*/
+
 
 class Render
 {
@@ -27,8 +32,6 @@ private:
 	void initializeWorld();
 
 	// Member variables
-	const int BORDER_X;
-	const int BORDER_Y;
 	const int WINDOW_WIDTH; // Could also in the future pass this as arguments to render in the constructor as input arguments to decied or change resolution :)
 	const int WINDOW_HEIGHT;
 	const int BOARDER_SIZE;

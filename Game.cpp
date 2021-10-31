@@ -5,7 +5,6 @@
 Game::Game():
  currentBoard()
 
-//,currentStone(Stone::color::BLACK,0,0) //TODO Dontt do this here, it should just be empty or some default side and position then we set it later. depending on whos turn and location.
 {
     // Create board object with current board.
 
@@ -21,15 +20,6 @@ Game::Game():
          m_stonePositions2d[row].resize(currentBoard.getCurrentBoardSize(), Stone(m_textures, Stone::COLOR::NO_STONE, 1, 1));
      }
         
-    // Fill the vector with "NO_STONE" objects. (same functionality as the .resize() cmd.
-    for (int row = 0; row < currentBoard.getCurrentBoardSize(); row++)
-    {
-        for (int col = 0; col < currentBoard.getCurrentBoardSize(); col++)
-        {
-            m_stonePositions2d[row].push_back(Stone(m_textures, Stone::COLOR::NO_STONE, col, row)); 
-        }
-    }
-
 }
 
 void Game::interact(sf::RenderWindow & window)
@@ -48,7 +38,13 @@ void Game::interact(sf::RenderWindow & window)
                 std::cout << "the LEFT button was pressed" << std::endl;
                 std::cout << "mouse x: " << event.mouseButton.x << std::endl;
                 std::cout << "mouse y: " << event.mouseButton.y << std::endl;
-                
+                // This loop should not handle any mouse click stuff just call a "mouseLeftClick" function here and that functino will handle everything.
+                // It will check if we pressed a button (and handle that) or if we pressed the board (and then call a function to check if the move is ok)
+                // send in mouseclick into gameLogic function to check if, 1st the click was made on the board and if yes if the square is free.
+                //  Also send a const reference to
+                // m_stonePositions2d to check if the position is free, if free return an enum saying which side made the move (and in turn which stone color)
+                // this info will be passed to the createStone function. If not free it will return an enum saying not free.
+
             }
         }
         
@@ -67,15 +63,23 @@ void Game::drawGame(sf::RenderWindow& window)
 
 void Game::makeMove(Stone::COLOR side)
 {   
-    createStone(Stone::COLOR::BLACK, 40, 10);
+    createStone(Stone::COLOR::WHITE, 40, 40);
 
+}
+
+void Game::update()
+{
 }
 
 void Game::createStone(Stone::COLOR side, int x, int y)
 {
-    m_stonePositions2d[1][1].setSide(side);
-    m_stonePositions2d[1][1].setSprite(side);
-    m_stonePositions2d[1][1].setPosition(x, y);
+    m_stonePositions2d[2][7].setSide(side);
+    m_stonePositions2d[2][7].setSprite(side);
+    m_stonePositions2d[2][7].setPosition(x, y);
+
+    m_stonePositions2d[4][4].setSide(side);
+    m_stonePositions2d[4][4].setSprite(side);
+    m_stonePositions2d[4][4].setPosition(80, 80);
     }
 
 void Game::drawBoard(sf::RenderWindow& window)

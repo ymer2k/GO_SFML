@@ -9,7 +9,7 @@
 
 
 
-//This is Current Game. Keeps stuff like mouseclicks? Or something like that.
+//This class Should do player interactions with the game
 
 
 class Game
@@ -26,6 +26,8 @@ public:
 	// (Game logic should make call this function after it checks if it is a valid move or not)
 	// should call createStone at the end.
 	void makeMove(Stone::COLOR);
+	// This function updates the game
+	void update();
 
 private:
 	// Function that draws the board

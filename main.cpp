@@ -51,6 +51,22 @@ void oldMain()
     view.setCenter(sf::Vector2f(200, 150));
     view.setSize(sf::Vector2f(400 + borderIncrease * aspectRatio, 300 + borderIncrease));
 
+    //Fonts
+    sf::Font font;
+    if (!font.loadFromFile("Fonts/ariblk.ttf"))
+    {
+        std::cout << "Could not load font" << std::endl;
+    }
+    sf::Text text;
+    text.setFont(font); // font is a sf::Font
+    text.setString("Hello world");
+    text.setCharacterSize(24); // in pixels, not points!
+    text.setFillColor(sf::Color::Red);
+    text.setStyle(sf::Text::Bold | sf::Text::Underlined);
+    text.setPosition(200, 50);
+
+
+
 
     sf::RectangleShape player(sf::Vector2f(160, 270));
     sf::RectangleShape board(sf::Vector2f(171, 171)); // Board texture size
@@ -259,6 +275,7 @@ void oldMain()
 
         window.setView(view);
         window.draw(player);
+        window.draw(text);
         //window.draw(sprite);
         window.display();
 
@@ -313,34 +330,45 @@ bool isInsideArea(int x1, int y1, int x2,
 
 int main()
 {    
-    //oldMain();
+    oldMain();
 
 
 
 
     //return 0;
 
-    Render world;
-    Game currentgame;
+    //Render world;
+    //Game currentGame;
 
-    // open main menu which is also the world.window but this time we will draw a menu instead. then when we click maybe size of the board etc it will close and we will open up the 
-    // "game window".
-    while (world.window.isOpen()) // the main game loop
-    {
-        currentgame.interact(world.window); // handles interactions with the game.
-        //currentgame.makeMove(Stone::BLACK);
-        world.window.clear();
-        currentgame.makeMove(Stone::BLACK);
-        currentgame.drawGame(world.window);
-
-
-        world.window.display();
+    //// open main menu which is also the world.window but this time we will draw a menu instead. then when we click maybe size of the board etc it will close and we will open up the 
+    //// "game window".
+    //while (world.window.isOpen()) // the main game loop
+    //{
+    //    world.window.clear();
+    //    currentGame.interact(world.window); // handles interactions with the game.
+    //    currentGame.makeMove(Stone::BLACK); // Moves should be made directly in the interact class when we get a click that is a valid move.
+    //    //If the move made in interact was valid then here on this line <-- call a function in game which in turn calls a function in gameLogic
+    //    // the function in gameLogic changes side, a member function is updates in gameLogic which keeps track whos turn it is.
+    //    currentGame.drawGame(world.window); // 
 
 
-    }
+    //    world.window.display();
 
 
+    //}
 
+
+    /*
+    They layout should be similar to this:
+    while (mWindow.isOpen())
+        {
+            processEvents(); // Takes care of the player interactions (in Game.cpp)
+            update(); //Updates the game  Later done in StateStack.cpp, for now, just a method in Game.cpp
+            render(); // does all the rednering on screen (draw. Should be done in Render.cpp)...
+            Maybe world.draw(currentGame.objectsToDraw) or something and then it draws
+        }
+    
+    */
 
 
 
