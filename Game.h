@@ -4,7 +4,9 @@
 #include "Stone.h"
 #include "Textures.h"
 #include "TextureHolder.h"
+#include "FontHolder.h"
 #include "GameLogic.h"
+#include "TextStrings.h"
 
 
 
@@ -28,6 +30,8 @@ public:
 	void makeMove(Stone::COLOR);
 	// This function updates the game
 	void update();
+	//Draws text to the game.
+	void drawText();
 
 private:
 	// Function that draws the board
@@ -50,9 +54,16 @@ private:
 	//Stone currentStone;
 	std::vector<std::vector<Stone>> m_stonePositions2d;
 
-	Textures m_pieceTextures; // Later have input arguemnts that decides which type of texture to retrive. Game should handle all Texture objects (long Scope)
+	TextureHolder m_textures;// Later have input arguemnts that decides which type of texture to retrive. Game should handle all Texture objects (long Scope)
 	//Textures m_boardTexture(Textures::TextureType::BOARD) Like this <-
-	TextureHolder m_textures;
+
+	FontHolder m_fonts;
+	//Hold all Text objects
+	std::vector<TextStrings> m_textVector;  // size for 10 text objects
+
+
+
+
 	
 };
 

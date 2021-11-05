@@ -330,32 +330,32 @@ bool isInsideArea(int x1, int y1, int x2,
 
 int main()
 {    
-    oldMain();
+    //oldMain();
 
 
 
 
     //return 0;
 
-    //Render world;
-    //Game currentGame;
+    Render world;
+    Game currentGame;
 
-    //// open main menu which is also the world.window but this time we will draw a menu instead. then when we click maybe size of the board etc it will close and we will open up the 
-    //// "game window".
-    //while (world.window.isOpen()) // the main game loop
-    //{
-    //    world.window.clear();
-    //    currentGame.interact(world.window); // handles interactions with the game.
-    //    currentGame.makeMove(Stone::BLACK); // Moves should be made directly in the interact class when we get a click that is a valid move.
-    //    //If the move made in interact was valid then here on this line <-- call a function in game which in turn calls a function in gameLogic
-    //    // the function in gameLogic changes side, a member function is updates in gameLogic which keeps track whos turn it is.
-    //    currentGame.drawGame(world.window); // 
-
-
-    //    world.window.display();
+    // open main menu which is also the world.window but this time we will draw a menu instead. then when we click maybe size of the board etc it will close and we will open up the 
+    // "game window".
+    while (world.window.isOpen()) // the main game loop
+    {
+        world.window.clear();
+        currentGame.interact(world.window); // handles interactions with the game.
+        currentGame.makeMove(Stone::BLACK); // Moves should be made directly in the interact class when we get a click that is a valid move.
+        //If the move made in interact was valid then here on this line <-- call a function in game which in turn calls a function in gameLogic
+        // the function in gameLogic changes side, a member function is updates in gameLogic which keeps track whos turn it is.
+        currentGame.drawGame(world.window); // 
 
 
-    //}
+        world.window.display();
+
+
+    }
 
 
     /*

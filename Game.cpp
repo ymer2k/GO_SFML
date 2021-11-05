@@ -2,24 +2,31 @@
 #include <iostream> // Needed for std::cout
 
 
-Game::Game():
- currentBoard()
-
+Game::Game()
 {
-    // Create board object with current board.
 
+    //Load text font
+    m_fonts.load(FontHolder::FontID::Ariel, "Fonts/ariblk.ttf");
+    //Create and put text in array
+    m_textVector.reserve(10);
+    //m_textVector.emplace_back();
+    //Text object(m_fonts, "test", sf::Color::Red, 20, sf::Text::Bold, sf::Vector2f(32, 3));
+    //Text object("Jude");
+    TextStrings object(m_fonts,"Test",sf::Color::Blue,30,sf::Text::Bold,sf::Vector2f(200,200));
+
+    m_textVector.emplace_back(object);
+
+    //Put this in a function (init Stones)
     //Load Stone texture
     m_textures.load(TextureHolder::ID::Stone, "Sprites/white_black.png");
+    // resize the outer vector
+    m_stonePositions2d.resize(currentBoard.getCurrentBoardSize());
+    // resize in the inner vectors and fill every position with a Stone Object. (have to do all this because I dont have a default constructor)
+    for (int row = 0; row < currentBoard.getCurrentBoardSize(); row++) 
+    {
+        m_stonePositions2d[row].resize(currentBoard.getCurrentBoardSize(), Stone(m_textures, Stone::COLOR::NO_STONE, 1, 1));
+    }
 
-
-     // resize the outer vector
-     m_stonePositions2d.resize(currentBoard.getCurrentBoardSize());
-     // resize in the inner vectors and fill every position with a Stone Object.
-     for (int row = 0; row < currentBoard.getCurrentBoardSize(); row++) 
-     {
-         m_stonePositions2d[row].resize(currentBoard.getCurrentBoardSize(), Stone(m_textures, Stone::COLOR::NO_STONE, 1, 1));
-     }
-        
 }
 
 void Game::interact(sf::RenderWindow & window)
@@ -59,6 +66,12 @@ void Game::drawGame(sf::RenderWindow& window)
 {
     drawBoard(window);
     drawStones(window);
+
+
+    for (auto& value : m_textVector)
+    {
+        window.draw(value.getText());
+    }
 }
 
 void Game::makeMove(Stone::COLOR side)
@@ -69,6 +82,11 @@ void Game::makeMove(Stone::COLOR side)
 
 void Game::update()
 {
+}
+
+void Game::drawText()
+{
+
 }
 
 void Game::createStone(Stone::COLOR side, int x, int y)
