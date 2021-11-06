@@ -1,4 +1,3 @@
 Debug
-Go_SFML.vcxproj
-Go_SFML.vcxproj.filters
-Go_SFML.vcxproj.user
+.vs
+Go_SFML/Debug
