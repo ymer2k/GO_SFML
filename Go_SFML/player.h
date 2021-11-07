@@ -1,6 +1,6 @@
 #pragma once
 class player
 {
-	//New coment
+	//New comment (spell check)
 };
 
