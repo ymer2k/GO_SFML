@@ -20,6 +20,7 @@ public:
 
 	sf::RectangleShape getBoard();
 	BOARDSIZE getCurrentBoardSize();
+	sf::Vector2u getBoardPixelSize();
 
 
 private:

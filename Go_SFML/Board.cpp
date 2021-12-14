@@ -48,3 +48,8 @@ BOARDSIZE Board::getCurrentBoardSize()
 {
 	return m_boardSize;
 }
+
+sf::Vector2u Board::getBoardPixelSize()
+{
+	return m_boardTextureSize;
+}

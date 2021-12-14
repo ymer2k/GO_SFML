@@ -45,15 +45,19 @@ void Game::interact(sf::RenderWindow & window)
             if (event.mouseButton.button == sf::Mouse::Left)
             {
                 std::cout << "the LEFT button was pressed" << std::endl;
-                std::cout << "mouse x: " << event.mouseButton.x << std::endl;
-                std::cout << "mouse y: " << event.mouseButton.y << std::endl;
+                std::cout << "Pixel System mouse x: " << event.mouseButton.x << std::endl;
+                std::cout << "Pixel System mouse y: " << event.mouseButton.y << std::endl;
 
                 //For now just hard code to get the basics working like drawing a stone on the coords im clicking.
-                //Now there seems to be some world coordinate problems (Think I had this before in the main() version)
-                // Because it doesnt draw the stone where my mouse points!!
-                //That is a problem AND that the stones dissapear the more I click. THey should replace each other if they have the same index tho. So maybe it 
-                //has something to do with the first problem.
-                createStone(Stone::COLOR::BLACK, std::round(event.mouseButton.x), std::round(event.mouseButton.y));
+  
+                sf::Vector2i mousePos(event.mouseButton.x, event.mouseButton.y);
+                sf::Vector2f worldMousePos = window.mapPixelToCoords(mousePos);
+
+                //createStone(Stone::COLOR::BLACK, std::round(event.mouseButton.x), std::round(event.mouseButton.y));
+                createStone(Stone::COLOR::BLACK, std::round(worldMousePos.x), std::round(worldMousePos.y));
+
+                std::cout << "Coords System mouse x: " << std::round(worldMousePos.x) << std::endl;
+                std::cout << "Coords System mouse y: " << std::round(worldMousePos.y) << std::endl;
 
                 //Implement commands after I get basic stone drawing to work AND when I figure out how to seperate game logic and input 
                 //Command* leftMouseButton = new PlaceStoneCommand(sf::Vector2f(event.mouseButton.x, event.mouseButton.y),Stone::COLOR::BLACK); //get current side from gameLogic class.
@@ -109,8 +113,15 @@ void Game::drawText()
 
 void Game::createStone(Stone::COLOR side, int x, int y)
 {
-    int Xindex = x / (9 * 19);//Divide by boardsize*StoneSpriteSize;
-    int Yindex = y / (9*19);
+    int Xindex = x / (currentBoard.getBoardPixelSize().x / currentBoard.getCurrentBoardSize());
+    int Yindex = y / (currentBoard.getBoardPixelSize().x / currentBoard.getCurrentBoardSize());
+    
+    //Sort away clicks that are outside of the board.
+    if (Xindex > currentBoard.getCurrentBoardSize()-1 || Yindex > currentBoard.getCurrentBoardSize()-1)
+        return;
+
+    std::cout << "Xindex: " << Xindex << std::endl;
+    std::cout << "Yindex " << Yindex << std::endl;
 
     m_stonePositions2d[Xindex][Yindex].setSide(side);
     m_stonePositions2d[Xindex][Yindex].setSprite(side);
