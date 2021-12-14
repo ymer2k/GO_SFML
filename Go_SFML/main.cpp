@@ -327,6 +327,7 @@ bool isInsideArea(int x1, int y1, int x2,
     return false;
 }
 
+const sf::Time TimePerFrame = sf::seconds(1.f / 60.f);
 
 int main()
 {    
@@ -340,18 +341,35 @@ int main()
     Render world;
     Game currentGame;
 
+    sf::Clock clock;
+    sf::Time timeSinceLastUpdate = sf::Time::Zero;
+
+
     // open main menu which is also the world.window but this time we will draw a menu instead. then when we click maybe size of the board etc it will close and we will open up the 
     // "game window".
     while (world.window.isOpen()) // the main game loop
     {
+
+        // Process user inputs CurrentGame.interact();
+        sf::Time dt = clock.restart();
+        timeSinceLastUpdate += dt; // add the time it took to update the game + render the game;
+        while (timeSinceLastUpdate > TimePerFrame)
+        {
+            //We stay in this loop and update the game without rendering until the condition returns false.
+            timeSinceLastUpdate -= TimePerFrame;
+
+            // Process user inputs CurrentGame.interact();
+            currentGame.interact(world.window);
+            //update(TimePerFrame) update game logic, for example a new stone placement etc currentGame.makeMove(Stone::BLACK);
+        }
+
+
         world.window.clear();
-        currentGame.interact(world.window); // handles interactions with the game.
-        currentGame.makeMove(Stone::BLACK); // Moves should be made directly in the interact class when we get a click that is a valid move.
+        //currentGame.interact(world.window); // handles interactions with the game.
+        //currentGame.makeMove(Stone::BLACK); // Moves should be made directly in the interact class when we get a click that is a valid move.
         //If the move made in interact was valid then here on this line <-- call a function in game which in turn calls a function in gameLogic
         // the function in gameLogic changes side, a member function is updates in gameLogic which keeps track whos turn it is.
-        currentGame.drawGame(world.window); // 
-
-
+        currentGame.drawGame(world.window); // render()
         world.window.display();
 
 

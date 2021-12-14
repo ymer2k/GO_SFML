@@ -3,7 +3,7 @@
 
 
 
-Stone::Stone(TextureHolder &texture, COLOR side, int x, int y) :
+Stone::Stone(TextureHolder &texture, COLOR side, int x, int y) : //Change int x, int y to sf::vector2i
 	m_location(x, y) // Instead of m_location(location) // Not used now
 	//,m_stoneTextures(whiteAndBlackTexture)
 	,m_texture(texture)

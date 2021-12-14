@@ -7,6 +7,10 @@
 #include "FontHolder.h"
 #include "GameLogic.h"
 #include "TextStrings.h"
+#include "Command.h"
+#include "PlaceStoneCommand.h"
+#include <memory>
+
 
 
 
@@ -60,7 +64,9 @@ private:
 	FontHolder m_fonts;
 	//Hold all Text objects
 	std::vector<TextStrings> m_textVector;  // size for 10 text objects
-
+	// input commands
+	Command* leftMouseButton = new PlaceStoneCommand(); //Change to unique_ptr
+	//std::unique_ptr<Command> leftMouseButton(new Command());
 
 
 

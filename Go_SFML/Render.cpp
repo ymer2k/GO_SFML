@@ -13,6 +13,7 @@ Render::Render() : //Constructor
 void Render::initializeWorld()
 {
 	window.create(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Go"); // the create  function is used when we create the window AFTER initilization.
+	window.setVerticalSyncEnabled(true);
 	view = window.getView();
 	// almost everything here should be member variables I guess Textures, sprites, shapes, fonts, etc.
 	float aspectRatio =(float) WINDOW_WIDTH /(float) WINDOW_HEIGHT;

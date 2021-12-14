@@ -1,5 +1,6 @@
 #include "Game.h"
 #include <iostream> // Needed for std::cout
+#include <cmath>
 
 
 Game::Game()
@@ -29,6 +30,7 @@ Game::Game()
 
 }
 
+//Command * Game::interact(sf::RenderWindow & window)
 void Game::interact(sf::RenderWindow & window)
 {
     while (window.pollEvent(event))
@@ -45,6 +47,22 @@ void Game::interact(sf::RenderWindow & window)
                 std::cout << "the LEFT button was pressed" << std::endl;
                 std::cout << "mouse x: " << event.mouseButton.x << std::endl;
                 std::cout << "mouse y: " << event.mouseButton.y << std::endl;
+
+                //For now just hard code to get the basics working like drawing a stone on the coords im clicking.
+                //Now there seems to be some world coordinate problems (Think I had this before in the main() version)
+                // Because it doesnt draw the stone where my mouse points!!
+                //That is a problem AND that the stones dissapear the more I click. THey should replace each other if they have the same index tho. So maybe it 
+                //has something to do with the first problem.
+                createStone(Stone::COLOR::BLACK, std::round(event.mouseButton.x), std::round(event.mouseButton.y));
+
+                //Implement commands after I get basic stone drawing to work AND when I figure out how to seperate game logic and input 
+                //Command* leftMouseButton = new PlaceStoneCommand(sf::Vector2f(event.mouseButton.x, event.mouseButton.y),Stone::COLOR::BLACK); //get current side from gameLogic class.
+                //leftMouseButton->execute();
+
+                //
+
+                // return 
+                
                 // This loop should not handle any mouse click stuff just call a "mouseLeftClick" function here and that functino will handle everything.
                 // It will check if we pressed a button (and handle that) or if we pressed the board (and then call a function to check if the move is ok)
                 // send in mouseclick into gameLogic function to check if, 1st the click was made on the board and if yes if the square is free.
@@ -91,13 +109,22 @@ void Game::drawText()
 
 void Game::createStone(Stone::COLOR side, int x, int y)
 {
-    m_stonePositions2d[2][7].setSide(side);
-    m_stonePositions2d[2][7].setSprite(side);
-    m_stonePositions2d[2][7].setPosition(x, y);
+    int Xindex = x / (9 * 19);//Divide by boardsize*StoneSpriteSize;
+    int Yindex = y / (9*19);
 
-    m_stonePositions2d[4][4].setSide(side);
-    m_stonePositions2d[4][4].setSprite(side);
-    m_stonePositions2d[4][4].setPosition(80, 80);
+    m_stonePositions2d[Xindex][Yindex].setSide(side);
+    m_stonePositions2d[Xindex][Yindex].setSprite(side);
+    m_stonePositions2d[Xindex][Yindex].setPosition(x, y);
+
+
+
+    //m_stonePositions2d[2][7].setSide(side);
+    //m_stonePositions2d[2][7].setSprite(side);
+    //m_stonePositions2d[2][7].setPosition(x, y);
+
+    //m_stonePositions2d[4][4].setSide(side);
+    //m_stonePositions2d[4][4].setSprite(side);
+    //m_stonePositions2d[4][4].setPosition(80, 80);
     }
 
 void Game::drawBoard(sf::RenderWindow& window)

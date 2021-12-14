@@ -29,26 +29,26 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -153,9 +153,12 @@
   <ItemGroup>
     <ClCompile Include="BaseSprite.cpp" />
     <ClCompile Include="Board.cpp" />
+    <ClCompile Include="Command.cpp" />
     <ClCompile Include="FontHolder.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameLogic.cpp" />
+    <ClCompile Include="InputHandler.cpp" />
+    <ClCompile Include="PlaceStoneCommand.cpp" />
     <ClCompile Include="Render.cpp" />
     <ClCompile Include="Location.cpp" />
     <ClCompile Include="main.cpp" />
@@ -168,9 +171,12 @@
   <ItemGroup>
     <ClInclude Include="BaseSprite.h" />
     <ClInclude Include="Board.h" />
+    <ClInclude Include="Command.h" />
     <ClInclude Include="FontHolder.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameLogic.h" />
+    <ClInclude Include="InputHandler.h" />
+    <ClInclude Include="PlaceStoneCommand.h" />
     <ClInclude Include="Render.h" />
     <ClInclude Include="Location.h" />
     <ClInclude Include="player.h" />
