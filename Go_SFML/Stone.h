@@ -33,6 +33,8 @@ public:
 	void setSide(Stone::COLOR side);
 	void setSprite(Stone::COLOR side);
 	void setPosition(int x, int y);
+	sf::Vector2u getStonePixelSize();
+
 
 
 private:

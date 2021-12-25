@@ -5,6 +5,11 @@
 #include "Render.h"
 #include "Game.h"
 
+//Next todo
+// There is a problem in update when we make the move after we check findClickedBoardPositionIndex, We dont do
+// The logic we did in the method  Game::createStone, that is multiply the index with boardpixel size divided by board size. eg.
+// 107/9 (107 wide board divided by 9x9 board)
+
 //Prototypes
 void runGame();
 bool isInsideArea(int x1, int y1, int x2,
@@ -340,6 +345,11 @@ int main()
 
     Render world;
     Game currentGame;
+    // Used to keep track of the current state of the game, i.e score, whos turn it is , when someone won, legal move etc.
+    // If GameState is ONLY used as an input argument in "currentGame" methods, then change it to just be a member variable
+    // in the Game class!
+    GameLogic GameState;
+    
 
     sf::Clock clock;
     sf::Time timeSinceLastUpdate = sf::Time::Zero;
@@ -359,8 +369,13 @@ int main()
             timeSinceLastUpdate -= TimePerFrame;
 
             // Process user inputs CurrentGame.interact();
-            currentGame.interact(world.window);
+            if (currentGame.interact(world.window))
+            {
+                currentGame.update(world.window, GameState);
+            }
             //update(TimePerFrame) update game logic, for example a new stone placement etc currentGame.makeMove(Stone::BLACK);
+            //currentGame.update(world.window, Gamestate); //This is called 60 times a sec but we only really need to run it 
+            //when interact returns true. So that is a simple fix.
         }
 
 

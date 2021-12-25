@@ -31,7 +31,7 @@ Game::Game()
 }
 
 //Command * Game::interact(sf::RenderWindow & window)
-void Game::interact(sf::RenderWindow & window)
+bool Game::interact(sf::RenderWindow & window)
 {
     while (window.pollEvent(event))
     {
@@ -49,15 +49,15 @@ void Game::interact(sf::RenderWindow & window)
                 std::cout << "Pixel System mouse y: " << event.mouseButton.y << std::endl;
 
                 //For now just hard code to get the basics working like drawing a stone on the coords im clicking.
-  
+
                 sf::Vector2i mousePos(event.mouseButton.x, event.mouseButton.y);
-                sf::Vector2f worldMousePos = window.mapPixelToCoords(mousePos);
+                m_worldMousePos = window.mapPixelToCoords(mousePos);
 
                 //createStone(Stone::COLOR::BLACK, std::round(event.mouseButton.x), std::round(event.mouseButton.y));
-                createStone(Stone::COLOR::BLACK, std::round(worldMousePos.x), std::round(worldMousePos.y));
+                //createStone(Stone::COLOR::BLACK, std::round(m_worldMousePos.x), std::round(m_worldMousePos.y));
 
-                std::cout << "Coords System mouse x: " << std::round(worldMousePos.x) << std::endl;
-                std::cout << "Coords System mouse y: " << std::round(worldMousePos.y) << std::endl;
+                std::cout << "Coords System mouse x: " << std::round(m_worldMousePos.x) << std::endl;
+                std::cout << "Coords System mouse y: " << std::round(m_worldMousePos.y) << std::endl;
 
                 //Implement commands after I get basic stone drawing to work AND when I figure out how to seperate game logic and input 
                 //Command* leftMouseButton = new PlaceStoneCommand(sf::Vector2f(event.mouseButton.x, event.mouseButton.y),Stone::COLOR::BLACK); //get current side from gameLogic class.
@@ -66,21 +66,19 @@ void Game::interact(sf::RenderWindow & window)
                 //
 
                 // return 
-                
+
                 // This loop should not handle any mouse click stuff just call a "mouseLeftClick" function here and that functino will handle everything.
                 // It will check if we pressed a button (and handle that) or if we pressed the board (and then call a function to check if the move is ok)
                 // send in mouseclick into gameLogic function to check if, 1st the click was made on the board and if yes if the square is free.
                 //  Also send a const reference to
                 // m_stonePositions2d to check if the position is free, if free return an enum saying which side made the move (and in turn which stone color)
                 // this info will be passed to the createStone function. If not free it will return an enum saying not free.
-
+                return true;
             }
         }
-        
-        if (event.type == sf::Event::MouseButtonReleased)
-        {
-            //released = true;
-        }
+        else
+            return false;
+
     }
 }
 
@@ -102,8 +100,36 @@ void Game::makeMove(Stone::COLOR side)
 
 }
 
-void Game::update()
+void Game::update(sf::RenderWindow& window, GameLogic& GameState)
 {
+    //Create gameLogic
+    //Get the corresponding Board Index of the click.
+    sf::Vector2i clickedBoardPositionIndex(GameState.findClickedBoardPositionIndex(m_worldMousePos, currentBoard, m_stonePositions2d[0][0].getStonePixelSize()));
+
+    //Return if clicked outside of the Board, //Later we will have buttons like Resign etc so then this would have to change.
+    if (clickedBoardPositionIndex.x == -1)
+    {
+        return; //Clicked outside of the board.
+    }
+
+
+    bool isSquareEmpty = GameState.checkIfSquareEmpty(m_stonePositions2d[clickedBoardPositionIndex.x][clickedBoardPositionIndex.y]);
+    //We know that index of the clicked piece postion AND that it is empty
+    // Now all we need to do is to change get the Stone object at that index, change it to the correct side & correct position
+    // Correct position is
+    //  Index.x * pieceTexturesize.x 
+    // Index.y * pieceTexturesize.y
+    //Put into a method
+    if (isSquareEmpty)
+    {
+        m_stonePositions2d[clickedBoardPositionIndex.x][clickedBoardPositionIndex.y].setSide(GameState.getCurrentSide());
+        sf::Vector2u stoneTextureSize(m_stonePositions2d[0][0].getStonePixelSize());
+        m_stonePositions2d[clickedBoardPositionIndex.x][clickedBoardPositionIndex.y]
+            .setPosition(stoneTextureSize.x * clickedBoardPositionIndex.x, stoneTextureSize.y * clickedBoardPositionIndex.y);
+        //createStone(Stone::COLOR::BLACK,clickedBoardPositionIndex)
+        //m_stonePositions2d[clickedBoardPositionIndex.x][clickedBoardPositionIndex.y].setPosition(clickedBoardPositionIndex.x, clickedBoardPositionIndex.y);
+    }
+
 }
 
 void Game::drawText()

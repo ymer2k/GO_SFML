@@ -9,6 +9,7 @@
 #include "TextStrings.h"
 #include "Command.h"
 #include "PlaceStoneCommand.h"
+#include "GameLogic.h"
 #include <memory>
 
 
@@ -25,7 +26,7 @@ class Game
 public:
 	Game();
 	// Function that controls interacting with the game world (mouse clicks, close window etc. This runs every cycle)
-	void interact(sf::RenderWindow & window);
+	bool interact(sf::RenderWindow & window);
 	// Function that draws Objects
 	void drawGame(sf::RenderWindow& window);
 	// Function that deals with the logic of making a move (getting the new stone in the exact right position etc)
@@ -33,7 +34,7 @@ public:
 	// should call createStone at the end.
 	void makeMove(Stone::COLOR);
 	// This function updates the game
-	void update();
+	void update(sf::RenderWindow& window,GameLogic& GameState);
 	//Draws text to the game.
 	void drawText();
 
@@ -67,6 +68,8 @@ private:
 	// input commands
 	Command* leftMouseButton = new PlaceStoneCommand(); //Change to unique_ptr
 	//std::unique_ptr<Command> leftMouseButton(new Command());
+
+	sf::Vector2f m_worldMousePos;
 
 
 

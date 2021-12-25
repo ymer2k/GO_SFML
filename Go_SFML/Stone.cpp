@@ -77,10 +77,16 @@ void Stone::loadSprite()
 
 void Stone::setPosition(int x, int y)
 {
+	// Save the current postion in member variables.
 	m_x = x;
 	m_y = y;
-	//m_stone.setPosition(m_x, m_y);
+	//Update the position of the texture.
 	m_stoneSprite.setPosition(x, y);
+}
+
+sf::Vector2u Stone::getStonePixelSize()
+{
+	return m_pieceTextureSize;
 }
 
 // should use an instance of Location for the location OK
