@@ -114,21 +114,20 @@ void Game::update(sf::RenderWindow& window, GameLogic& GameState)
 
 
     bool isSquareEmpty = GameState.checkIfSquareEmpty(m_stonePositions2d[clickedBoardPositionIndex.x][clickedBoardPositionIndex.y]);
-    //We know that index of the clicked piece postion AND that it is empty
-    // Now all we need to do is to change get the Stone object at that index, change it to the correct side & correct position
-    // Correct position is
-    //  Index.x * pieceTexturesize.x 
-    // Index.y * pieceTexturesize.y
-    //Put into a method
+
+    //Put into a method func addMoveToVector().
     if (isSquareEmpty)
     {
         m_stonePositions2d[clickedBoardPositionIndex.x][clickedBoardPositionIndex.y].setSide(GameState.getCurrentSide());
+        m_stonePositions2d[clickedBoardPositionIndex.x][clickedBoardPositionIndex.y].setSprite(GameState.getCurrentSide());
         sf::Vector2u stoneTextureSize(m_stonePositions2d[0][0].getStonePixelSize());
         m_stonePositions2d[clickedBoardPositionIndex.x][clickedBoardPositionIndex.y]
             .setPosition(stoneTextureSize.x * clickedBoardPositionIndex.x, stoneTextureSize.y * clickedBoardPositionIndex.y);
-        //createStone(Stone::COLOR::BLACK,clickedBoardPositionIndex)
-        //m_stonePositions2d[clickedBoardPositionIndex.x][clickedBoardPositionIndex.y].setPosition(clickedBoardPositionIndex.x, clickedBoardPositionIndex.y);
+        //Change sides after "valid" move
+        GameState.changeSide();
     }
+
+    //func checkForCapture    or func checkLiberties
 
 }
 
