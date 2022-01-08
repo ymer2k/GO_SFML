@@ -17,6 +17,9 @@ they have to continue playing and fill in some stones.
 */ 
 GameLogic::GameLogic():
 	m_currentSide(Stone::BLACK)
+	, m_currentBoardSize(0)
+	, m_blackScore(0)
+	, m_whiteScore(0)
 {
 
 }
@@ -27,6 +30,7 @@ void GameLogic::rungame()
 
 sf::Vector2i GameLogic::findClickedBoardPositionIndex(sf::Vector2f worldMousePos, Board& currentBoard, sf::Vector2u stoneTexturePixelSize) //Only have board size instead of board object as input argument
 {
+	m_currentBoardSize = (int) currentBoard.getCurrentBoardSize();
 	// Checks every square area on the board to find which square the mouse clicked in.
 	for (int row = 0; row < currentBoard.getCurrentBoardSize(); row++)
 	{
@@ -95,4 +99,172 @@ bool GameLogic::isInsideArea(int x1, int y1, int x2, int y2, int x, int y)
 		return true;
 
 	return false;
+}
+
+int GameLogic::removeDeadStones(Stone::COLOR side, int boardSize, std::vector<std::vector<Stone>>& stonePositions2d,int checkSuicide)
+{
+	
+	int deadStones[MAX_BOARD_SIZE][MAX_BOARD_SIZE] = { 0 };
+
+	
+
+	//Check the stones NOT from the side that just made a move. ( Example: if black made a move, check if any white stones died)
+	// Loop through all positions on the board and skip empty and not current side stone.
+	for (int x = 0; x < boardSize; x++)
+		for (int y = 0; y < boardSize; y++)
+		{
+			if (stonePositions2d[x][y].getSide() != side)
+			{
+				continue;
+			}
+			//Reset the m_visited vector to all false (loop through all positions)
+			for (int x = 0; x < boardSize; x++) for (int y = 0; y < boardSize; y++) m_visited[x][y] = false;
+			if(!aliveStoneCheck(side, stonePositions2d, x, y))
+			{
+				//Add to coord to deadStonesVector
+				deadStones[x][y] = 1;
+			}
+		}
+	//Loop through all positions and look for at deadStonesVector for dead stones. if dead, change the corresponding index
+	// in stonePositions2d to no_Stone.
+	int nrOfDeadStones = 0;
+	for (int x = 0; x < boardSize; x++) for (int y = 0; y < boardSize; y++)
+	{
+		if (deadStones[x][y] == 1)
+		{
+			nrOfDeadStones++;
+			//possibleKoPos.x = x;
+			//possibleKoPos.y = y;
+			dataKo.possibleKoPos.x = x;
+			dataKo.possibleKoPos.y = y;
+
+			stonePositions2d[x][y].setSide(Stone::NO_STONE);
+		}
+	}
+	if (nrOfDeadStones == 1)
+	{
+		dataKo.oneStoneDied = true;
+	}
+
+	return nrOfDeadStones;
+}
+
+bool GameLogic::isKo(Stone::COLOR side, int boardSize, std::vector<std::vector<Stone>>& stonePositions2d)
+{
+	bool retVal = false;
+	int x = dataKo.possibleKoPos.x;
+	int y = dataKo.possibleKoPos.y;
+	if (dataKo.oneStoneDied) // There can only be KO if ONE single stone died.
+	{
+
+
+		//Check if surrounding stones are of same color as the player that made a move this turn. 
+		//Also make sure we are not out of bounds! being out of bounds is same as being surrounded by a stone on that side
+		retVal = ((x - 1) < 0) || (side == stonePositions2d[x - 1][y].getSide());
+		retVal &= ((x + 1) > boardSize - 1) || (side == stonePositions2d[x + 1][y].getSide());
+		retVal &= ((y - 1) < 0) || (side == stonePositions2d[x][y - 1].getSide());
+		retVal &= ((y + 1) > boardSize - 1) || (side == stonePositions2d[x][y + 1].getSide());
+
+		dataKo.oneStoneDied = false; //reset
+		return  retVal;
+
+	}
+
+		dataKo.oneStoneDied = false; //reset
+	return false;
+}
+
+void GameLogic::setKoCoords()
+{
+	dataKo.certainKoPos = dataKo.possibleKoPos;
+}
+
+bool GameLogic::checkKoCoordsSameAsCurrentMove(sf::Vector2i coords)
+{
+	if (coords == dataKo.certainKoPos)
+		return true;
+
+	return false;
+}
+
+void GameLogic::resetKoCoords()
+{
+	dataKo.certainKoPos.x = -1;
+	dataKo.certainKoPos.y = -1;
+}
+
+bool GameLogic::checkForSuicideMove(Stone::COLOR side, int boardSize, std::vector<std::vector<Stone>>& stonePositions2d, sf::Vector2i currentMove)
+{
+	// Temporarley make the move in stonePositions2d
+	stonePositions2d[currentMove.x][currentMove.y].setSide(side);
+
+	int deadStones[MAX_BOARD_SIZE][MAX_BOARD_SIZE] = { 0 };
+	//Reset the m_visited vector to all false (loop through all positions)
+	for (int x = 0; x < boardSize; x++) for (int y = 0; y < boardSize; y++) m_visited[x][y] = false;
+	if (!aliveStoneCheck(side, stonePositions2d, currentMove.x, currentMove.y))
+	{
+		//Remove the temp move before we return
+		stonePositions2d[currentMove.x][currentMove.y].setSide(Stone::COLOR::NO_STONE);
+		return true;
+	}
+	else
+	{
+		//remove the temp move before we return
+		stonePositions2d[currentMove.x][currentMove.y].setSide(Stone::COLOR::NO_STONE);
+		return false;
+	}
+		
+}
+
+void GameLogic::updateScore(int nrOfDeadStones, Stone::COLOR side)
+{
+	if (side == Stone::COLOR::BLACK)
+	{
+		m_blackScore += nrOfDeadStones;
+		std::cout << "Black: " << m_blackScore << std::endl;
+
+	}
+	else
+	{
+		m_whiteScore += nrOfDeadStones;
+		std::cout << "White: " << m_whiteScore << std::endl;
+	}
+
+}
+
+int GameLogic::getBlackScore()
+{
+	return m_blackScore;
+}
+
+int GameLogic::getWhiteScore()
+{
+	return m_whiteScore;
+}
+
+
+
+bool GameLogic::aliveStoneCheck(Stone::COLOR side, std::vector<std::vector<Stone>>& stonePositions2d, int x, int y)
+{
+
+	//Check if out of bounds.
+	if (x > m_currentBoardSize - 1 || x < 0 || y > m_currentBoardSize -1 || y < 0)
+		return false;
+
+	if (m_visited[x][y])
+		return false; //If already visited skip
+	m_visited[x][y] = true;
+
+	if (stonePositions2d[x][y].getSide() == Stone::NO_STONE)
+		return true; // No stone means it has a liberty and thus alive.
+
+	if (stonePositions2d[x][y].getSide() != side)
+		return false; //That x,y coord does NOT have a liberty (or own stone) so return false.
+
+	//recursive search for more stones of "side"
+	bool retVal = aliveStoneCheck(side, stonePositions2d, x - 1, y);
+	retVal |= aliveStoneCheck(side, stonePositions2d, x + 1, y);
+	retVal |= aliveStoneCheck(side, stonePositions2d, x, y - 1);
+	retVal |= aliveStoneCheck(side, stonePositions2d, x, y + 1);
+	return retVal;
 }

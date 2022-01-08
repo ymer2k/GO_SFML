@@ -4,8 +4,9 @@
 class TextStrings
 {
 public:
-	TextStrings(FontHolder& font, const std::string& string, sf::Color color, int textSize, sf::Uint32 style, sf::Vector2f pos);
+	TextStrings(FontHolder& font, const std::string& string, sf::Color color, int textSize, sf::Uint32 style, sf::Vector2u pos);
 	sf::Text getText();
+	void setText(const std::string& string);
 
 private:
 	sf::Text m_text;

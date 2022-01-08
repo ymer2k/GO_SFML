@@ -21,11 +21,12 @@ public:
 	sf::RectangleShape getBoard();
 	BOARDSIZE getCurrentBoardSize();
 	sf::Vector2u getBoardPixelSize();
+	void selectBoardSize(BOARDSIZE boardSize);
+
 
 
 private:
 	// member functions
-	void selectBoardSize(BOARDSIZE boardSize);
 
 
 	// member variables
