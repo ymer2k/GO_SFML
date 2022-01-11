@@ -5,10 +5,11 @@
 
 
 Game::Game()
+   // : m_passButton(m_textures)
 {
 
     //Load text font
-    m_fonts.load(FontHolder::FontID::Ariel, "Fonts/ariblk.ttf");
+    m_fonts.load(FontHolder::FontID::Ariel, "Fonts/slkscre.ttf");
     //Create and put text in array  
     sf::Vector2u boardTextureSize(m_currentBoard.getBoardPixelSize());
     TextStrings blackText(m_fonts,"BLACK: 0",sf::Color::White,10,sf::Text::Bold,sf::Vector2u(boardTextureSize.x/10, boardTextureSize.y*1.05));
@@ -27,6 +28,9 @@ Game::Game()
     {
         m_stonePositions2d[row].resize(m_currentBoard.getCurrentBoardSize(), Stone(m_textures, Stone::COLOR::NO_STONE, 1, 1));
     }
+    /////
+   // sf::Vector2i horPos(1,1);
+   // m_passButton(m_textures, horPos);
 
 }
 
@@ -102,103 +106,7 @@ void Game::makeMove(Stone::COLOR side)
 
 void Game::update(sf::RenderWindow& window, GameLogic& GameState)
 {
-    //Create gameLogic
-    //Get the corresponding Board Index of the click.
-    sf::Vector2i clickedBoardPositionIndex(GameState.findClickedBoardPositionIndex(m_worldMousePos, m_currentBoard, m_stonePositions2d[0][0].getStonePixelSize()));
-
-    //Return if clicked outside of the Board, //Later we will have buttons like Resign etc so then this would have to change.
-    if (clickedBoardPositionIndex.x == -1)
-    {
-        return; //Clicked outside of the board.
-    }
-
-    bool isSquareEmpty = GameState.checkIfSquareEmpty(m_stonePositions2d[clickedBoardPositionIndex.x][clickedBoardPositionIndex.y]);
-
-    bool possibleSuicideMove = false;
-    bool possibleIllegalKoMove = false;
-    //Put into a method func addMoveToVector().
-    if (isSquareEmpty)
-    {
-        //Check if move results in suicide
-        //call removeDeadStones for the side that just made a move.if his own stones died then its an illegal move.
-        // return the killed stones.
-        if (GameState.checkForSuicideMove(GameState.getCurrentSide(), m_currentBoard.getCurrentBoardSize(), m_stonePositions2d, clickedBoardPositionIndex))
-            possibleSuicideMove = true;
-        // Check if move is KO
-        if (GameState.checkKoCoordsSameAsCurrentMove(clickedBoardPositionIndex))// Have to take into account which side makes the move
-          // possibleIllefalKoMove  return; // Current move is Ko is return (invalid move) 
-            possibleIllegalKoMove = true;
-
-        //Make the move. (maybe put into func)
-        m_stonePositions2d[clickedBoardPositionIndex.x][clickedBoardPositionIndex.y].setSide(GameState.getCurrentSide());
-        m_stonePositions2d[clickedBoardPositionIndex.x][clickedBoardPositionIndex.y].setSprite(GameState.getCurrentSide());
-        sf::Vector2u stoneTextureSize(m_stonePositions2d[0][0].getStonePixelSize());
-        m_stonePositions2d[clickedBoardPositionIndex.x][clickedBoardPositionIndex.y]
-            .setPosition(stoneTextureSize.x * clickedBoardPositionIndex.x, stoneTextureSize.y * clickedBoardPositionIndex.y);
-        //Change sides after "valid" move
-       // GameState.changeSide();
-    }
-
-
-    int nrOfDeadStones = 0;
-    //Check if the move just made caused any dead stones for the opponent.
-    if (GameState.getCurrentSide() == Stone::COLOR::BLACK) // Black made a move, remove dead stones for white
-    {
-        // If no stones where killed AND the move was a possible suicide move then revert the move and simply return because
-        // It is an illegal move.
-        nrOfDeadStones = GameState.removeDeadStones(Stone::COLOR::WHITE, m_currentBoard.getCurrentBoardSize(), m_stonePositions2d, 0);
-        if (!nrOfDeadStones && possibleSuicideMove)
-        {
-            m_stonePositions2d[clickedBoardPositionIndex.x][clickedBoardPositionIndex.y].setSide(Stone::COLOR::NO_STONE); //revert move
-            return;
-        }
-        else if(nrOfDeadStones > 1)
-            GameState.resetKoCoords();
-        // if ONE single stone died by the move and the position was flagged as a KO move then it truley was a KO so revert and return
-        else if (nrOfDeadStones == 1 && possibleIllegalKoMove)
-        {
-            m_stonePositions2d[clickedBoardPositionIndex.x][clickedBoardPositionIndex.y].setSide(Stone::COLOR::NO_STONE); //revert move
-            return;
-        }
-
-
-    }
-    else // White made a move, remove dead stones for Black.
-    {
-        nrOfDeadStones = GameState.removeDeadStones(Stone::COLOR::BLACK, m_currentBoard.getCurrentBoardSize(), m_stonePositions2d, 0);
-        if (!nrOfDeadStones && possibleSuicideMove)
-        {
-            m_stonePositions2d[clickedBoardPositionIndex.x][clickedBoardPositionIndex.y].setSide(Stone::COLOR::NO_STONE);
-            return;
-        }
-        else if (nrOfDeadStones > 1) // If over one stone died then it was NOT a Ko move
-            GameState.resetKoCoords();
-        // if ONE single stone died by the move and the position was flagged as a KO move then it truley was a KO so revert and return
-        else if (nrOfDeadStones == 1 && possibleIllegalKoMove)
-        {
-            m_stonePositions2d[clickedBoardPositionIndex.x][clickedBoardPositionIndex.y].setSide(Stone::COLOR::NO_STONE); //revert move
-            return;
-        }
-
-    }
-    GameState.updateScore(nrOfDeadStones, GameState.getCurrentSide());
-
-
-    //Reset Current Ko Coords
-    GameState.resetKoCoords();
-    
-    //call GameState function that checks if the last move caused a Ko situation.
-    if(GameState.isKo(GameState.getCurrentSide(), m_currentBoard.getCurrentBoardSize(),m_stonePositions2d))
-    {
-        GameState.setKoCoords();
-    }
-    
-
-    //Update score Text (make into a function)
-    //INputs: GameState -> side, black score, white score.
-    UpdateTextScore(GameState);
-
-    GameState.changeSide();
+    Game::handleGameLogic(window,GameState);
 
 
 }
@@ -226,7 +134,7 @@ void Game::createStone(Stone::COLOR side, int x, int y)
 
     }
 
-void Game::UpdateTextScore(GameLogic& GameState)
+void Game::updateTextScore(GameLogic& GameState)
 {
     auto blackScoreStr = std::to_string(GameState.getBlackScore());
     m_textVector[0].setText("BLACK: " + blackScoreStr);
@@ -235,6 +143,101 @@ void Game::UpdateTextScore(GameLogic& GameState)
 
 
 
+}
+
+void Game::handleGameLogic(sf::RenderWindow& window, GameLogic& GameState)
+{
+    //Create gameLogic
+    //Get the corresponding Board Index of the click.
+    sf::Vector2i clickedBoardPositionIndex(GameState.findClickedBoardPositionIndex(m_worldMousePos, m_currentBoard, m_stonePositions2d[0][0].getStonePixelSize()));
+
+    //Return if clicked outside of the Board, //Later we will have buttons like Resign etc so then this would have to change.
+    if (clickedBoardPositionIndex.x == -1)
+    {
+        return; //Clicked outside of the board.
+    }
+
+    bool isSquareEmpty = GameState.checkIfSquareEmpty(m_stonePositions2d[clickedBoardPositionIndex.x][clickedBoardPositionIndex.y]);
+
+    bool possibleSuicideMove = false;
+    bool possibleIllegalKoMove = false;
+    //Put into a method func addMoveToVector().
+    if (isSquareEmpty)
+    {
+        //Check if move results in suicide
+        //call removeDeadStones for the side that just made a move.if his own stones died then its an illegal move.
+        // return the killed stones.
+        if (GameState.checkForSuicideMove(GameState.getCurrentSide(), m_currentBoard.getCurrentBoardSize(), m_stonePositions2d, clickedBoardPositionIndex))
+            possibleSuicideMove = true;
+        // Check if move is KO
+        if (GameState.checkKoCoordsSameAsCurrentMove(clickedBoardPositionIndex))// Have to take into account which side makes the move
+            possibleIllegalKoMove = true;
+
+        //Make the move. (maybe put into func)
+        m_stonePositions2d[clickedBoardPositionIndex.x][clickedBoardPositionIndex.y].setSide(GameState.getCurrentSide());
+        m_stonePositions2d[clickedBoardPositionIndex.x][clickedBoardPositionIndex.y].setSprite(GameState.getCurrentSide());
+        sf::Vector2u stoneTextureSize(m_stonePositions2d[0][0].getStonePixelSize());
+        m_stonePositions2d[clickedBoardPositionIndex.x][clickedBoardPositionIndex.y]
+            .setPosition(stoneTextureSize.x * clickedBoardPositionIndex.x, stoneTextureSize.y * clickedBoardPositionIndex.y);
+    }
+
+
+    int nrOfDeadStones = 0;
+    //Check if the move just made caused any dead stones for the opponent.
+    if (GameState.getCurrentSide() == Stone::COLOR::BLACK) // Black made a move, remove dead stones for white
+    {
+        // If no stones where killed AND the move was a possible suicide move then revert the move and simply return because
+        // It is an illegal move.
+        nrOfDeadStones = GameState.removeDeadStones(Stone::COLOR::WHITE, m_currentBoard.getCurrentBoardSize(), m_stonePositions2d, 0);
+        if (!nrOfDeadStones && possibleSuicideMove)
+        {
+            m_stonePositions2d[clickedBoardPositionIndex.x][clickedBoardPositionIndex.y].setSide(Stone::COLOR::NO_STONE); //revert move
+            return;
+        }
+        else if (nrOfDeadStones > 1)
+            GameState.resetKoCoords();
+        // if ONE single stone died by the move and the position was flagged as a KO move then it truley was a KO so revert and return
+        else if (nrOfDeadStones == 1 && possibleIllegalKoMove)
+        {
+            m_stonePositions2d[clickedBoardPositionIndex.x][clickedBoardPositionIndex.y].setSide(Stone::COLOR::NO_STONE); //revert move
+            return;
+        }
+
+    }
+    else // White made a move, remove dead stones for Black.
+    {
+        nrOfDeadStones = GameState.removeDeadStones(Stone::COLOR::BLACK, m_currentBoard.getCurrentBoardSize(), m_stonePositions2d, 0);
+        if (!nrOfDeadStones && possibleSuicideMove)
+        {
+            m_stonePositions2d[clickedBoardPositionIndex.x][clickedBoardPositionIndex.y].setSide(Stone::COLOR::NO_STONE);
+            return;
+        }
+        else if (nrOfDeadStones > 1) // If over one stone died then it was NOT a Ko move
+            GameState.resetKoCoords();
+        // if ONE single stone died by the move and the position was flagged as a KO move then it truley was a KO so revert and return
+        else if (nrOfDeadStones == 1 && possibleIllegalKoMove)
+        {
+            m_stonePositions2d[clickedBoardPositionIndex.x][clickedBoardPositionIndex.y].setSide(Stone::COLOR::NO_STONE); //revert move
+            return;
+        }
+
+    }
+    GameState.updateScore(nrOfDeadStones, GameState.getCurrentSide());
+
+
+    //Reset Current Ko Coords
+    GameState.resetKoCoords();
+
+    //call GameState function that checks if the last move caused a Ko situation.
+    if (GameState.isKo(GameState.getCurrentSide(), m_currentBoard.getCurrentBoardSize(), m_stonePositions2d))
+    {
+        GameState.setKoCoords();
+    }
+
+
+    //Update score Text
+    updateTextScore(GameState);
+    GameState.changeSide();
 }
 
 

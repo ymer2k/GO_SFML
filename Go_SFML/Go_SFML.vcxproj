@@ -162,7 +162,6 @@
     <ClCompile Include="Render.cpp" />
     <ClCompile Include="Location.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="player.cpp" />
     <ClCompile Include="Stone.cpp" />
     <ClCompile Include="TextStrings.cpp" />
     <ClCompile Include="TextureHolder.cpp" />
@@ -179,7 +178,6 @@
     <ClInclude Include="PlaceStoneCommand.h" />
     <ClInclude Include="Render.h" />
     <ClInclude Include="Location.h" />
-    <ClInclude Include="player.h" />
     <ClInclude Include="Stone.h" />
     <ClInclude Include="TextStrings.h" />
     <ClInclude Include="TextureHolder.h" />

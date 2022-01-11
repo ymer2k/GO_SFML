@@ -11,6 +11,7 @@
 #include "PlaceStoneCommand.h"
 #include "GameLogic.h"
 #include <memory>
+#include "BaseSprite.h"
 
 
 
@@ -46,7 +47,9 @@ private:
 	 // Function to create new stone objects ( with position and side and save into the vector)
 	void createStone(Stone::COLOR side, int x, int y);
 	// Function to update the game score.
-	void UpdateTextScore(GameLogic& GameState);
+	void updateTextScore(GameLogic& GameState);
+	// Function to to handle all game board related things like clicks, moves, rules, points etc
+	void handleGameLogic(sf::RenderWindow& window, GameLogic& GameState);
 
 
 
@@ -58,8 +61,11 @@ private:
 	// the functions I call will have to take in Game object to get the info it needs to calculate teh stuff to return. And maybe Board too.
 	GameLogic gameLogic;
 
-	//Stone currentStone;
+	//Stone vector;
 	std::vector<std::vector<Stone>> m_stonePositions2d;
+
+	//BaseSprite Pass button
+	//BaseSprite m_passButton;
 
 	TextureHolder m_textures;// Later have input arguemnts that decides which type of texture to retrive. Game should handle all Texture objects (long Scope)
 	//Textures m_boardTexture(Textures::TextureType::BOARD) Like this <-
