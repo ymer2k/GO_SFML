@@ -27,7 +27,21 @@ public:
 	void updateScore(int nrOfDeadStones, Stone::COLOR side);
 	int getBlackScore();
 	int getWhiteScore();
+	// Will fill the connecting area of the coords x,y with the color of side.
+	bool floodFillArea(Stone::COLOR TargetSide, Stone::COLOR replacmentSide, std::vector<std::vector<Stone>>& stoneVector, std::vector<std::vector<Stone>>& ScoreStoneVector, int x, int y);
+	void resetVisitedArray(int boardSize);
+	void addTerritoryScore(Stone::COLOR side, int scoreToAdd);
+	void setWinner(); // Saves the side with highest score.
+	Stone::COLOR getWinner();
 
+
+	enum GameState
+	{
+		TitleScreen,
+		GamePlay,
+		ScoreCounting,
+		PresentWinner
+	};
 
 private:
 
@@ -36,6 +50,7 @@ private:
 		int y2, int x, int y);
 	bool aliveStoneCheck(Stone::COLOR side, std::vector<std::vector<Stone>>& stonePositions2d, int x, int y);
 
+	
 	// Member variables
 	Stone::COLOR m_currentSide;
 	int m_currentBoardSize;
@@ -59,6 +74,11 @@ private:
 	sf::Vector2i currentKoPos;
 	int m_blackScore;
 	int m_whiteScore;
+
+	int m_blackTerritoryScore;
+	int m_whiteTerritoryScore;
+
+	Stone::COLOR m_winner;
 
 
 };

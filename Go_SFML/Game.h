@@ -37,25 +37,34 @@ public:
 	// This function updates the game
 	void update(sf::RenderWindow& window,GameLogic& GameState);
 	//Draws text to the game.
-	void drawText();
 
 private:
 	// Function that draws the board
 	void drawBoard(sf::RenderWindow& window);
 	// Function to draw Stones
 	void drawStones(sf::RenderWindow& window);
-	 // Function to create new stone objects ( with position and side and save into the vector)
+	// Function to draw Stones after Game is finished and we do scoring
+	void drawStonesScoring(sf::RenderWindow& window);
+    // Function to create new stone objects ( with position and side and save into the vector)
 	void createStone(Stone::COLOR side, int x, int y);
 	// Function to update the game score.
 	void updateTextScore(GameLogic& GameState);
 	// Function to to handle all game board related things like clicks, moves, rules, points etc
-	void handleGameLogic(sf::RenderWindow& window, GameLogic& GameState);
+	void handleMakingMoveLogic(sf::RenderWindow& window, GameLogic& GameState);
+	// Function to handle pass functionality
+	void handlePassFunctionality(GameLogic& GameState);
+	// Function that handle Done button functionality
+	void handleDoneButtonFunctionality(GameLogic& GameState);
+	// Draw text
+	void drawText(sf::RenderWindow& window);
+	// update winner text
+	void updateWinnerText(GameLogic& GameState);
 
 
 
 
 	// Member variables
-	sf::Event event;
+
 	Board m_currentBoard;
 	// use gamelogic to call funcitons in gamelogic that will return stuff I need. forexample yes it was a valid move etc.
 	// the functions I call will have to take in Game object to get the info it needs to calculate teh stuff to return. And maybe Board too.
@@ -64,8 +73,20 @@ private:
 	//Stone vector;
 	std::vector<std::vector<Stone>> m_stonePositions2d;
 
+	// Scoring Stone Vector
+	std::vector<std::vector<Stone>> m_scoreStonePositions2d;
+
+
 	//BaseSprite Pass button
-	//BaseSprite m_passButton;
+	BaseSprite m_passButton;
+
+	//BaseSprite pass icon
+	BaseSprite m_passIcon;
+
+	//BaseSprite Done button
+	BaseSprite m_doneButton;
+
+	BaseSprite m_smallStone;
 
 	TextureHolder m_textures;// Later have input arguemnts that decides which type of texture to retrive. Game should handle all Texture objects (long Scope)
 	//Textures m_boardTexture(Textures::TextureType::BOARD) Like this <-
@@ -77,8 +98,17 @@ private:
 	Command* leftMouseButton = new PlaceStoneCommand(); //Change to unique_ptr
 	//std::unique_ptr<Command> leftMouseButton(new Command());
 
+	// last click converted to world position.
 	sf::Vector2f m_worldMousePos;
 
+	// flag if player has passed or not
+	bool m_blackPassed;
+	bool m_whitePassed;
+
+
+
+
+	GameLogic::GameState m_currentGameState;
 
 
 	

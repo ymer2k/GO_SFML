@@ -7,11 +7,13 @@ class Stone
 {
 
 public:
-	enum COLOR
+	enum class COLOR
 	{
 		NO_STONE,
 		BLACK,
-		WHITE
+		BLACK_AREA,
+		WHITE,
+		WHITE_AREA
 	};
 
 	// Member variables
@@ -19,7 +21,7 @@ public:
 	//Stone(color side, const Location& location); // A default constructor BECAUSE of the default consturctor the Stone vector will not be empty, it will be filled of these default Stones...
 	//How to avoid printing these default stones? Have a default NO_STONE value? and check if NO_STONE dont draw?
 	//Stone(Textures *whiteAndBlackTexture, COLOR side = NO_STONE, int x = 0, int y = 0); // maybe stone should have an ID as well, stone 1 stone 2 etc. Passing Textures objet by reference instead of by value
-	Stone(TextureHolder& texture, COLOR side, int x, int y);
+	Stone(TextureHolder& texture, COLOR side, float x, float y);
 	//Stone(COLOR side = NO_STONE, int x = 0, int y = 0); // maybe stone should have an ID as well, stone 1 stone 2 etc.
 	
 
@@ -31,7 +33,10 @@ public:
 	COLOR getSide();
 	void setSide(Stone::COLOR side);
 	void setSprite(Stone::COLOR side);
-	void setPosition(int x, int y);
+	void setPosition(float x, float y);
+	sf::Vector2f getPosition();
+	void setScale(float x, float y);
+	void setOrigin(float x, float y);
 	sf::Vector2u getStonePixelSize();
 
 
@@ -51,8 +56,8 @@ private:
 	sf::Texture m_pieceTexture;
 	sf::Vector2u m_pieceTextureSize;
 
-	int m_x;
-	int m_y;
+	float m_x;
+	float m_y;
 
 
 

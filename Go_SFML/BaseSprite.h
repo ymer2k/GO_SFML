@@ -13,6 +13,12 @@ public:
 	sf::Sprite getSprite();
 	void setPosition(sf::Vector2i pos);
 	sf::Vector2u getTexturePixelSize();
+	void loadSprite(TextureHolder::ID id);
+	void loadTransparentSprite();
+	void makeWhiteTransparent();
+	void setScale(float x, float y);
+	void setOrigin(float x, float y);
+	
 
 
 
@@ -21,12 +27,12 @@ public:
 private:
 
 	// member functions
-	void loadSprite();
 
 	// member variables
 
 	TextureHolder& m_textureHolder;
 
+	sf::Image m_image;
 	sf::Sprite m_sprite;
 	sf::Texture m_texture;
 	sf::Vector2u m_textureSize;

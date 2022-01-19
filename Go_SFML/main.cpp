@@ -105,6 +105,43 @@ void oldMain()
     sprite.setPosition(20, 20);
     ///
 
+    /// Transparency test, from Image
+    //sf::Image toad;
+    //toad.loadFromFile("Sprites/toadP.png");
+    //toad.createMaskFromColor(sf::Color::White, 0);
+
+    //sf::Texture toadT;
+    //toadT.loadFromImage(toad);
+    //sf::Sprite toadS;
+    //toadS.setTexture(toadT);
+    //toadS.setPosition(1, 1);
+
+
+    ///Transparenct test, from Texture
+    sf::Sprite toadS;
+    sf::Texture toadT;
+    
+    toadT.loadFromFile("Sprites/toadP.png");
+    sf::Image ToadI = toadT.copyToImage();
+    ToadI.createMaskFromColor(sf::Color::White);
+    toadT.loadFromImage(ToadI);
+    toadS.setTexture(toadT);
+    toadS.setPosition(1, 1);
+
+    //
+    sf::Sprite m_sprite;
+    sf::Texture m_texture;
+
+    sf::Image m_image = m_texture.copyToImage();
+    m_image.createMaskFromColor(sf::Color::White);
+    m_texture.loadFromImage(m_image);
+    m_sprite.setTexture(m_texture);
+    m_sprite.setPosition(1, 1);
+
+
+
+    ///
+
 
     player.setPosition(356, 206);
     sf::Texture playerTexture;
@@ -280,6 +317,7 @@ void oldMain()
 
         window.setView(view);
         window.draw(player);
+        window.draw(toadS);
         window.draw(text);
         //window.draw(sprite);
         window.display();
@@ -336,11 +374,8 @@ const sf::Time TimePerFrame = sf::seconds(1.f / 60.f);
 
 int main()
 {    
+
     //oldMain();
-
-
-
-
     //return 0;
 
     Render world;

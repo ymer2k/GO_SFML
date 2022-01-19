@@ -3,7 +3,7 @@
 
 
 
-Stone::Stone(TextureHolder &texture, COLOR side, int x, int y) : //Change int x, int y to sf::vector2i
+Stone::Stone(TextureHolder &texture, COLOR side, float x, float y) : //Change int x, int y to sf::vector2i
 	m_location(x, y) // Instead of m_location(location) // Not used now
 	//,m_stoneTextures(whiteAndBlackTexture)
 	,m_texture(texture)
@@ -44,7 +44,7 @@ void Stone::setSide(Stone::COLOR side)
 
 void Stone::setSprite(Stone::COLOR side)
 {
-	if (side == BLACK)
+	if (side == Stone::COLOR::BLACK)
 	{
 		m_stoneSprite.setTextureRect(sf::IntRect(m_pieceTextureSize.x, 0, m_pieceTextureSize.x, m_pieceTextureSize.y));
 	}
@@ -67,7 +67,7 @@ void Stone::loadSprite()
 
 	//SPRITE
 		// Set stone depending on which side plays.
-	if (m_side == BLACK)
+	if (m_side == Stone::COLOR::BLACK) // || BLACK_TERRITORY
 	{
 		m_stoneSprite.setTextureRect(sf::IntRect(m_pieceTextureSize.x, 0, m_pieceTextureSize.x, m_pieceTextureSize.y));
 	}
@@ -75,13 +75,29 @@ void Stone::loadSprite()
 		m_stoneSprite.setTextureRect(sf::IntRect(0, 0, m_pieceTextureSize.x, m_pieceTextureSize.y));
 }
 
-void Stone::setPosition(int x, int y)
+void Stone::setPosition(float x, float y)
 {
 	// Save the current postion in member variables.
 	m_x = x;
 	m_y = y;
 	//Update the position of the texture.
 	m_stoneSprite.setPosition(x, y);
+}
+
+sf::Vector2f Stone::getPosition()
+{
+	sf::Vector2f retVal = m_stoneSprite.getPosition();
+	return retVal;
+}
+
+void Stone::setScale(float x, float y)
+{
+	m_stoneSprite.setScale(x, y);
+}
+
+void Stone::setOrigin(float x, float y)
+{
+	m_stoneSprite.setOrigin(x, y);
 }
 
 sf::Vector2u Stone::getStonePixelSize()

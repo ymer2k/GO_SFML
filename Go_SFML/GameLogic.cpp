@@ -16,10 +16,13 @@ they have to continue playing and fill in some stones.
 
 */ 
 GameLogic::GameLogic():
-	m_currentSide(Stone::BLACK)
+	m_currentSide(Stone::COLOR::BLACK)
 	, m_currentBoardSize(0)
 	, m_blackScore(0)
 	, m_whiteScore(0)
+	, m_blackTerritoryScore(0)
+	, m_whiteTerritoryScore(0)
+	, m_winner(Stone::COLOR::NO_STONE)
 {
 
 }
@@ -72,7 +75,7 @@ sf::Vector2i GameLogic::findClickedBoardPositionIndex(sf::Vector2f worldMousePos
 
 bool GameLogic::checkIfSquareEmpty(Stone stone)
 {
-	if (stone.getSide() == stone.NO_STONE)
+	if (stone.getSide() == Stone::COLOR::NO_STONE)
 	{
 		return true;
 	}
@@ -89,7 +92,7 @@ Stone::COLOR GameLogic::getCurrentSide()
 
 void GameLogic::changeSide()
 {
-	m_currentSide = m_currentSide == Stone::BLACK ? Stone::WHITE : Stone::BLACK;
+	m_currentSide = m_currentSide == Stone::COLOR::BLACK ? Stone::COLOR::WHITE : Stone::COLOR::BLACK;
 }
 
 bool GameLogic::isInsideArea(int x1, int y1, int x2, int y2, int x, int y)
@@ -138,7 +141,7 @@ int GameLogic::removeDeadStones(Stone::COLOR side, int boardSize, std::vector<st
 			dataKo.possibleKoPos.x = x;
 			dataKo.possibleKoPos.y = y;
 
-			stonePositions2d[x][y].setSide(Stone::NO_STONE);
+			stonePositions2d[x][y].setSide(Stone::COLOR::NO_STONE);
 		}
 	}
 	if (nrOfDeadStones == 1)
@@ -234,18 +237,19 @@ void GameLogic::updateScore(int nrOfDeadStones, Stone::COLOR side)
 
 int GameLogic::getBlackScore()
 {
-	return m_blackScore;
+	return m_blackScore+m_blackTerritoryScore;
 }
 
 int GameLogic::getWhiteScore()
 {
-	return m_whiteScore;
+	return m_whiteScore+m_whiteTerritoryScore;
 }
 
 
 
 bool GameLogic::aliveStoneCheck(Stone::COLOR side, std::vector<std::vector<Stone>>& stonePositions2d, int x, int y)
 {
+	// Side is the color we look if its dead or not.
 
 	//Check if out of bounds.
 	if (x > m_currentBoardSize - 1 || x < 0 || y > m_currentBoardSize -1 || y < 0)
@@ -255,7 +259,7 @@ bool GameLogic::aliveStoneCheck(Stone::COLOR side, std::vector<std::vector<Stone
 		return false; //If already visited skip
 	m_visited[x][y] = true;
 
-	if (stonePositions2d[x][y].getSide() == Stone::NO_STONE)
+	if (stonePositions2d[x][y].getSide() == Stone::COLOR::NO_STONE)
 		return true; // No stone means it has a liberty and thus alive.
 
 	if (stonePositions2d[x][y].getSide() != side)
@@ -267,4 +271,86 @@ bool GameLogic::aliveStoneCheck(Stone::COLOR side, std::vector<std::vector<Stone
 	retVal |= aliveStoneCheck(side, stonePositions2d, x, y - 1);
 	retVal |= aliveStoneCheck(side, stonePositions2d, x, y + 1);
 	return retVal;
+}
+
+bool GameLogic::floodFillArea(Stone::COLOR TargetSide,
+	Stone::COLOR replacmentSide,
+	std::vector<std::vector<Stone>>& stoneVector,
+	std::vector<std::vector<Stone>>& ScoreStoneVector,
+	int x, int y)
+{
+	// TargetSide is the side we look for and change to a different side.
+	// replacmentSide is the side we change the TargetSide to.
+	if (x > m_currentBoardSize - 1 || x < 0 || y > m_currentBoardSize - 1 || y < 0)
+		return false;
+
+	if (m_visited[x][y])
+		return false; //If already visited skip
+	m_visited[x][y] = true;
+
+	// if we already changed color or found same color then return
+	//if (stoneVector[x][y].getSide() == replacmentSide)
+	//	return false;
+
+	if (stoneVector[x][y].getSide() != TargetSide)
+		return false;
+
+
+	// Here change side of the current x,y position
+	//Change current x y position of the score vector 
+	// Maybe have an if statment here that if replacementSide is black then insert BLACK_AREA. But should be fine without
+	ScoreStoneVector[x][y].setSide(replacmentSide);
+	// quick hack to just move the origin of the stons to the center of the stone instead of the top left corner (makes scaling easier later)
+	float originOffset = 9.5;
+	ScoreStoneVector[x][y].setOrigin(originOffset, originOffset);
+	//
+	ScoreStoneVector[x][y]
+		.setPosition(19 * x + originOffset, 19 * y + originOffset);
+	ScoreStoneVector[x][y].setSprite(replacmentSide);
+
+
+
+
+	//recursive search for more stones of "side"
+	bool retVal = floodFillArea(TargetSide, replacmentSide, stoneVector,ScoreStoneVector, x - 1, y);
+	retVal |= floodFillArea(TargetSide, replacmentSide, stoneVector, ScoreStoneVector, x + 1, y);
+	retVal |= floodFillArea(TargetSide, replacmentSide, stoneVector, ScoreStoneVector, x, y - 1);
+	retVal |= floodFillArea(TargetSide, replacmentSide, stoneVector, ScoreStoneVector, x, y + 1);
+	return retVal;
+
+	return false;
+}
+
+void GameLogic::resetVisitedArray(int boardSize)
+{
+	//Reset the m_visited vector to all false (loop through all positions)
+	for (int x = 0; x < boardSize; x++) for (int y = 0; y < boardSize; y++) m_visited[x][y] = false;
+}
+
+void GameLogic::addTerritoryScore(Stone::COLOR side, int scoreToAdd)
+{
+	if (side == Stone::COLOR::BLACK)
+	{
+		m_blackTerritoryScore = scoreToAdd;
+	}
+	else if (side == Stone::COLOR::WHITE)
+		m_whiteTerritoryScore = scoreToAdd;
+}
+
+void GameLogic::setWinner()
+{
+	if ((m_blackScore + m_blackTerritoryScore) > (m_whiteScore + m_whiteTerritoryScore))
+	{
+		m_winner = Stone::COLOR::BLACK;
+	}
+	else
+	{
+		m_winner = Stone::COLOR::WHITE;
+	}
+	
+}
+
+Stone::COLOR GameLogic::getWinner()
+{
+	return m_winner;
 }
