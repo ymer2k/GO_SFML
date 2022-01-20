@@ -8,6 +8,8 @@ Game::Game()
     : m_passButton(m_textures)
     , m_passIcon(m_textures)
     , m_doneButton(m_textures)
+    , m_yesButton(m_textures)
+    , m_noButton(m_textures)
     , m_blackPassed(0)
     , m_whitePassed(0)
     , m_currentGameState(GameLogic::GameState::GamePlay)
@@ -24,8 +26,11 @@ Game::Game()
     TextStrings whiteText(m_fonts, "WHITE: 0", sf::Color::White, 10, sf::Text::Bold, sf::Vector2u(boardTextureSize.x * 6 / 10, boardTextureSize.y * 1.05));
     m_textVector.emplace_back(whiteText);
 
-    TextStrings winnerDeclerationText(m_fonts, "", sf::Color::White, 12, sf::Text::Bold, sf::Vector2u(boardTextureSize.x / 6, boardTextureSize.y * 1.4));
+    TextStrings winnerDeclerationText(m_fonts, "", sf::Color::White, 10, sf::Text::Bold, sf::Vector2u(boardTextureSize.x / 4, boardTextureSize.y * 1.4));
     m_textVector.emplace_back(winnerDeclerationText);
+
+    TextStrings playAgainText(m_fonts, "PLAY AGAIN?", sf::Color::White, 10, sf::Text::Bold, sf::Vector2u(boardTextureSize.x / 4, boardTextureSize.y * 1.5));
+    m_textVector.emplace_back(playAgainText);
 
     //Put this in a function (init Stones)
     sf::Image tempImage;
@@ -69,8 +74,23 @@ Game::Game()
     m_textures.load(TextureHolder::ID::Done, tempImage);
     m_doneButton.loadSprite(TextureHolder::ID::Done);
     m_doneButton.setScale(0.1, 0.1);
-    m_doneButton.setPosition(sf::Vector2i(60, 200)); //
+    m_doneButton.setPosition(sf::Vector2i(60, 200)); 
 
+    // Load yes button sprite
+    tempImage.loadFromFile("Sprites/yesButton.png"); // Temporary, change to DONE button
+    tempImage.createMaskFromColor(sf::Color::White);
+    m_textures.load(TextureHolder::ID::Yes, tempImage);
+    m_yesButton.loadSprite(TextureHolder::ID::Yes);
+    m_yesButton.setScale(0.1, 0.1);
+    m_yesButton.setPosition(sf::Vector2i(boardTextureSize.x / 5, boardTextureSize.y * 1.5));
+
+    // Load no button sprite
+    tempImage.loadFromFile("Sprites/noButton.png"); // Temporary, change to DONE button
+    tempImage.createMaskFromColor(sf::Color::White);
+    m_textures.load(TextureHolder::ID::No, tempImage);
+    m_noButton.loadSprite(TextureHolder::ID::No);
+    m_noButton.setScale(0.1, 0.1);
+    m_noButton.setPosition(sf::Vector2i(boardTextureSize.x / 2, boardTextureSize.y * 1.5));
 
 
     //tempImage.loadFromFile("Sprites/black.png");
@@ -184,6 +204,10 @@ void Game::drawGame(sf::RenderWindow& window)
         drawStonesScoring(window);
         window.draw(m_doneButton.getSprite());
         Game::drawText(window);
+        window.draw(m_textVector[2].getText()); //Winner text (maybe change to enum)
+        window.draw(m_textVector[3].getText()); //Play again text (maybe change to enum)
+        window.draw(m_yesButton.getSprite());
+        window.draw(m_noButton.getSprite());
         
 
     }
@@ -199,10 +223,19 @@ void Game::makeMove(Stone::COLOR side)
 void Game::update(sf::RenderWindow& window, GameLogic& GameState)
 {
 
+    // Have another GameState here called GameSetup where we set the Boardsize. 
+    // #DONE Step 0  create the two other game boards in paint.
+    // Step 1 change the board class so it doesn't have a constructor,
+     // Step 2 create a set function for the board class where we set the board size
+    // create some buttons we can click on 9, 13, 19 and clicking one of those buttons will call the set function and set the correct board size.
+    // Step 3 make sure the board size member variable gets the correct size.
+    //  Step 4 Hopefully game functionality will scale with the size BUT the Button and text position needs to be adjusted
+    // kommentar, I andra GO spel n'r man valjer bigger or osmaller screen, the stones become bigger and smaller but the screen size remains the same.
     if (m_currentGameState == GameLogic::GameState::GamePlay)
     {
         Game::handlePassFunctionality(GameState);
         Game::handleMakingMoveLogic(window, GameState);
+        GameState.setWinner(); // Set current winner if the game would finish without counting territory
         return;
     }
 
@@ -327,6 +360,31 @@ void Game::update(sf::RenderWindow& window, GameLogic& GameState)
     if (m_currentGameState == GameLogic::GameState::PresentWinner)
     {
         // Handle "play again" button functionality and when that button is pressed reset score and vectors!
+                // put into function, handle Pressing Yes and No button functionality
+        sf::FloatRect yesButtonBounds = m_yesButton.getSprite().getGlobalBounds();
+        sf::FloatRect noButtonBounds = m_noButton.getSprite().getGlobalBounds();
+
+        if (yesButtonBounds.contains(m_worldMousePos))
+        {
+            // Reset everything!
+            // put into a function reset function
+            GameState.resetEverything();
+            m_blackPassed = false;
+            m_whitePassed = false;
+            GameState.setSide(Stone::COLOR::BLACK);
+            for (int x = 0; x < m_currentBoard.getCurrentBoardSize(); x++) for (int y = 0; y < m_currentBoard.getCurrentBoardSize(); y++)
+            {
+                m_scoreStonePositions2d[x][y].setSide(Stone::COLOR::NO_STONE);
+                m_stonePositions2d[x][y].setSide(Stone::COLOR::NO_STONE);
+                m_currentGameState = GameLogic::GameState::GamePlay;
+            }
+        }
+
+        if (noButtonBounds.contains(m_worldMousePos))
+        {
+            // close the screen
+            window.close();
+        }
     }
 
 
@@ -334,10 +392,13 @@ void Game::update(sf::RenderWindow& window, GameLogic& GameState)
 
 void Game::drawText(sf::RenderWindow& window)
 {
-    for (auto& value : m_textVector)
-    {
-        window.draw(value.getText());
-    }
+    //for (auto& value : m_textVector)
+    //{
+    //    window.draw(value.getText());
+    //}
+    for (int i = 0; i < 2; i++)
+        window.draw(m_textVector[i].getText());
+    
 }
 
 void Game::createStone(Stone::COLOR side, int x, int y)
@@ -371,10 +432,15 @@ void Game::updateWinnerText(GameLogic& GameState)
 {
     if (GameState.getWinner() == Stone::COLOR::BLACK)
     {
-        m_textVector[2].setText("Black wins!");
+        m_textVector[2].setText("BLACK WINNS!");
+    }
+    else if (GameState.getWinner() == Stone::COLOR::WHITE)
+    {
+        m_textVector[2].setText("WHITE WINNS!");
     }
     else
-        m_textVector[2].setText("White wins!");
+        m_textVector[2].setText("DRAW!");
+
 
 }
 

@@ -18,6 +18,7 @@ public:
 	void placeValidMoveInStoneVector(sf::Vector2i stoneIndex);
 	Stone::COLOR getCurrentSide();
 	void changeSide();
+	void setSide(Stone::COLOR side);
 	int removeDeadStones(Stone::COLOR side, int boardSize, std::vector<std::vector<Stone>>& stonePositions2d,int checkSuicide);
 	bool isKo(Stone::COLOR side,int boardSize, std::vector<std::vector<Stone>>& stonePositions2d);
 	void setKoCoords();
@@ -33,6 +34,8 @@ public:
 	void addTerritoryScore(Stone::COLOR side, int scoreToAdd);
 	void setWinner(); // Saves the side with highest score.
 	Stone::COLOR getWinner();
+	void resetEverything();
+
 
 
 	enum GameState
@@ -72,8 +75,8 @@ private:
 	bool m_deadStones[MAX_BOARD_SIZE][MAX_BOARD_SIZE] = { false };
 	// keep track of Ko location;
 	sf::Vector2i currentKoPos;
-	int m_blackScore;
-	int m_whiteScore;
+	int m_blackCaptureScore;
+	int m_whiteCaptureScore;
 
 	int m_blackTerritoryScore;
 	int m_whiteTerritoryScore;

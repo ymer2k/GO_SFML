@@ -20,7 +20,9 @@ public:
 		Pass,
 		PassIcon,
 		StoneBlack,
-		Done
+		Done,
+		Yes,
+		No
 	};
 
 	// given the ID and filename we "load" the map with the requested texture.

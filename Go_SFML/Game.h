@@ -83,6 +83,11 @@ private:
 	//BaseSprite pass icon
 	BaseSprite m_passIcon;
 
+	//BaseSprite yesButton
+	BaseSprite m_yesButton;
+
+	BaseSprite m_noButton;
+
 	//BaseSprite Done button
 	BaseSprite m_doneButton;
 
@@ -101,8 +106,8 @@ private:
 	// last click converted to world position.
 	sf::Vector2f m_worldMousePos;
 
-	// flag if player has passed or not
-	bool m_blackPassed;
+	// flag if player has passed or not. SHould be moved to the GameLogic class
+	bool m_blackPassed; 
 	bool m_whitePassed;
 
 

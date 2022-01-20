@@ -18,8 +18,8 @@ they have to continue playing and fill in some stones.
 GameLogic::GameLogic():
 	m_currentSide(Stone::COLOR::BLACK)
 	, m_currentBoardSize(0)
-	, m_blackScore(0)
-	, m_whiteScore(0)
+	, m_blackCaptureScore(0)
+	, m_whiteCaptureScore(0)
 	, m_blackTerritoryScore(0)
 	, m_whiteTerritoryScore(0)
 	, m_winner(Stone::COLOR::NO_STONE)
@@ -93,6 +93,11 @@ Stone::COLOR GameLogic::getCurrentSide()
 void GameLogic::changeSide()
 {
 	m_currentSide = m_currentSide == Stone::COLOR::BLACK ? Stone::COLOR::WHITE : Stone::COLOR::BLACK;
+}
+
+void GameLogic::setSide(Stone::COLOR side)
+{
+	m_currentSide = side;
 }
 
 bool GameLogic::isInsideArea(int x1, int y1, int x2, int y2, int x, int y)
@@ -223,26 +228,26 @@ void GameLogic::updateScore(int nrOfDeadStones, Stone::COLOR side)
 {
 	if (side == Stone::COLOR::BLACK)
 	{
-		m_blackScore += nrOfDeadStones;
-		std::cout << "Black: " << m_blackScore << std::endl;
+		m_blackCaptureScore += nrOfDeadStones;
+		std::cout << "Black: " << m_blackCaptureScore << std::endl;
 
 	}
 	else
 	{
-		m_whiteScore += nrOfDeadStones;
-		std::cout << "White: " << m_whiteScore << std::endl;
+		m_whiteCaptureScore += nrOfDeadStones;
+		std::cout << "White: " << m_whiteCaptureScore << std::endl;
 	}
 
 }
 
 int GameLogic::getBlackScore()
 {
-	return m_blackScore+m_blackTerritoryScore;
+	return m_blackCaptureScore+m_blackTerritoryScore;
 }
 
 int GameLogic::getWhiteScore()
 {
-	return m_whiteScore+m_whiteTerritoryScore;
+	return m_whiteCaptureScore+m_whiteTerritoryScore;
 }
 
 
@@ -296,9 +301,12 @@ bool GameLogic::floodFillArea(Stone::COLOR TargetSide,
 		return false;
 
 
-	// Here change side of the current x,y position
-	//Change current x y position of the score vector 
-	// Maybe have an if statment here that if replacementSide is black then insert BLACK_AREA. But should be fine without
+	// Have an if statment that if at the coords of the replacmentstone has the same type of stone in the normal stone vector then just return 
+	// Do this to avoid drawing same color area on same color stones.
+	if (replacmentSide == stoneVector[x][y].getSide() && replacmentSide != Stone::COLOR::NO_STONE)
+		return false; //Same color stone as replacmentStone.
+
+	// add the replacmentside to the scorestonevector
 	ScoreStoneVector[x][y].setSide(replacmentSide);
 	// quick hack to just move the origin of the stons to the center of the stone instead of the top left corner (makes scaling easier later)
 	float originOffset = 9.5;
@@ -307,8 +315,6 @@ bool GameLogic::floodFillArea(Stone::COLOR TargetSide,
 	ScoreStoneVector[x][y]
 		.setPosition(19 * x + originOffset, 19 * y + originOffset);
 	ScoreStoneVector[x][y].setSprite(replacmentSide);
-
-
 
 
 	//recursive search for more stones of "side"
@@ -339,18 +345,30 @@ void GameLogic::addTerritoryScore(Stone::COLOR side, int scoreToAdd)
 
 void GameLogic::setWinner()
 {
-	if ((m_blackScore + m_blackTerritoryScore) > (m_whiteScore + m_whiteTerritoryScore))
+
+	if ((m_blackCaptureScore + m_blackTerritoryScore) > (m_whiteCaptureScore + m_whiteTerritoryScore))
 	{
 		m_winner = Stone::COLOR::BLACK;
 	}
-	else
+	else if ((m_blackCaptureScore + m_blackTerritoryScore) < (m_whiteCaptureScore + m_whiteTerritoryScore))
 	{
 		m_winner = Stone::COLOR::WHITE;
 	}
+	else
+		m_winner = Stone::COLOR::NO_STONE;
 	
 }
 
 Stone::COLOR GameLogic::getWinner()
 {
 	return m_winner;
+}
+
+void GameLogic::resetEverything()
+{
+	m_blackCaptureScore = 0;
+	m_whiteCaptureScore = 0;
+	m_blackTerritoryScore = 0;
+	m_whiteTerritoryScore = 0;
+	m_winner = Stone::COLOR::NO_STONE;
 }

@@ -13,6 +13,7 @@ void FontHolder::load(FontID id, const std::string& filename)
 	// getTexture(10) is the font size.
 	const_cast<sf::Texture&>(font->getTexture(10)).setSmooth(false); 
 
+
 	// insert into map, move actually moves the texture pointer into the map and texture should become "empty".
 	// we do this instead of copying.
 	m_fontMap.insert(std::make_pair(id, std::move(font)));
