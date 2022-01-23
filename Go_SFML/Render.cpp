@@ -3,8 +3,8 @@
 
 
 Render::Render() : //Constructor
-	WINDOW_WIDTH(344) //Board Size *2 + BOARDER_SIZE=347 // round to 348 to get even number to render at integer positions
-	,WINDOW_HEIGHT(600)
+	WINDOW_WIDTH(1024) // most recent 344//Board Size *2 + BOARDER_SIZE=347 // round to 348 to get even number to render at integer positions
+	,WINDOW_HEIGHT(720) // most recent 600
 	,BOARDER_SIZE(5)
 {
 	initializeWorld();

@@ -1,6 +1,7 @@
 #include "Board.h"
 
-Board::Board(BOARDSIZE boardSize) :
+//Board::Board(BOARDSIZE boardSize) :
+Board::Board():
 	m_board()
 ,   m_boardTexture()
 ,   m_boardTextureSize()
@@ -8,8 +9,8 @@ Board::Board(BOARDSIZE boardSize) :
 
 
 {
-	m_boardSize = boardSize;
-	selectBoardSize(boardSize);
+	//m_boardSize = boardSize;
+	//selectBoardSize(boardSize);
 }
 
 
@@ -23,14 +24,29 @@ void Board::selectBoardSize(BOARDSIZE boardSize)
 		m_boardTextureSize = m_boardTexture.getSize();
 		m_board.setSize(sf::Vector2f(m_boardTextureSize)); // Convert sf::Vector2u to sf::Vector2f before setting the size.
 		m_board.setTexture(&m_boardTexture);
+		m_boardSize = BOARDSIZE::BOARD_9x9;
+		// Set m_currentBoardScale // Get this in the Game class to adjust for a scale difference in bordsize.
+
 	}
 	else if (boardSize == BOARD_13x13) //13x13_BOARD == 2
 	{
 		//create 13x13 board texture
+		m_boardTexture.loadFromFile("Sprites/13x13_board.png");
+		m_boardTextureSize = m_boardTexture.getSize();
+		m_board.setSize(sf::Vector2f(m_boardTextureSize)); // Convert sf::Vector2u to sf::Vector2f before setting the size.
+		m_board.setTexture(&m_boardTexture);
+		m_boardSize = BOARDSIZE::BOARD_13x13;
+		// Set m_currentBoardScale // Get this in the Game class to adjust for a scale difference in bordsize.
 	}
 	else if (boardSize == BOARD_19x19) // 19x19_BOARD == 3
 	{
-		// create 19x19 board texture
+		m_boardTexture.loadFromFile("Sprites/19x19_board.png");
+		m_boardTextureSize = m_boardTexture.getSize();
+		m_board.setSize(sf::Vector2f(m_boardTextureSize)); // Convert sf::Vector2u to sf::Vector2f before setting the size.
+		m_board.setTexture(&m_boardTexture);
+		//m_board.setScale(0.7, 0.7);
+		m_boardSize = BOARDSIZE::BOARD_19x19;
+		// Set m_currentBoardScale // Get this in the Game class to adjust for a scale difference in bordsize.
 	}
 	else
 	{

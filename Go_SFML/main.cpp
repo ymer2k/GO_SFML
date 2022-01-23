@@ -388,7 +388,7 @@ int main()
 
     sf::Clock clock;
     sf::Time timeSinceLastUpdate = sf::Time::Zero;
-
+    static bool first = true;
 
     // open main menu which is also the world.window but this time we will draw a menu instead. then when we click maybe size of the board etc it will close and we will open up the 
     // "game window".
@@ -404,9 +404,10 @@ int main()
             timeSinceLastUpdate -= TimePerFrame;
 
             // Process user inputs CurrentGame.interact();
-            if (currentGame.interact(world.window))
+            if (currentGame.interact(world.window) || first)
             {
                 currentGame.update(world.window, GameState);
+                first = false; // Update on click so first screen will not be shown unless we automatically show first.
             }
             //update(TimePerFrame) update game logic, for example a new stone placement etc currentGame.makeMove(Stone::BLACK);
             //currentGame.update(world.window, Gamestate); //This is called 60 times a sec but we only really need to run it 

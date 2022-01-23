@@ -27,3 +27,8 @@ void TextStrings::setText(const std::string& string)
 {
 	m_text.setString(string);
 }
+
+sf::Vector2f TextStrings::getPosition()
+{
+	return m_position;
+}

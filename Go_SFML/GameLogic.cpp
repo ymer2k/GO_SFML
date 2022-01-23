@@ -152,6 +152,7 @@ int GameLogic::removeDeadStones(Stone::COLOR side, int boardSize, std::vector<st
 	if (nrOfDeadStones == 1)
 	{
 		dataKo.oneStoneDied = true;
+		// Save the position of the dead stone so we can revert it IF it turns out to be a KO move.
 	}
 
 	return nrOfDeadStones;
@@ -178,7 +179,7 @@ bool GameLogic::isKo(Stone::COLOR side, int boardSize, std::vector<std::vector<S
 
 	}
 
-		dataKo.oneStoneDied = false; //reset
+	dataKo.oneStoneDied = false; //reset
 	return false;
 }
 
@@ -371,4 +372,10 @@ void GameLogic::resetEverything()
 	m_blackTerritoryScore = 0;
 	m_whiteTerritoryScore = 0;
 	m_winner = Stone::COLOR::NO_STONE;
+}
+
+void GameLogic::revertCapturedStone(std::vector<std::vector<Stone>>& stonePositions2d, Stone::COLOR capturedStoneSide)
+{
+	stonePositions2d[dataKo.possibleKoPos.x][dataKo.possibleKoPos.y].setSide(capturedStoneSide);
+	
 }

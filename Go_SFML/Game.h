@@ -15,8 +15,6 @@
 
 
 
-
-
 //This class Should do player interactions with the game
 
 
@@ -37,6 +35,17 @@ public:
 	// This function updates the game
 	void update(sf::RenderWindow& window,GameLogic& GameState);
 	//Draws text to the game.
+
+
+	// Used to find the right text in m_textvector
+	enum TEXTINDEX
+	{
+		BLACK,
+		WHITE,
+		SCORING_PHASE,
+		WINNER,
+		PLAY_AGAIN
+	};
 
 private:
 	// Function that draws the board
@@ -59,6 +68,17 @@ private:
 	void drawText(sf::RenderWindow& window);
 	// update winner text
 	void updateWinnerText(GameLogic& GameState);
+	// initialize the stone vectors (depends on board size)
+	void initStoneVectors();
+	// Load, set texture and position of BaseSprite objects
+	// Takes a reference to the BaseSprite we want to load
+	void initBaseSpriteObject(BaseSprite & sprite,const std::string& filename, TextureHolder::ID id, float scale, sf::Vector2i pos);
+	// Initilise all text objects
+	void initText();
+	// handle board size button functionality
+	bool handleBoardSizeButtonFunctionality();
+	// choose BoardSizeFunctionality
+	//void handleBoardSizeFunctionality()
 
 
 
@@ -93,6 +113,11 @@ private:
 
 	BaseSprite m_smallStone;
 
+	BaseSprite m_9x9Button;
+	BaseSprite m_13x13Button;
+	BaseSprite m_19x19Button;
+
+
 	TextureHolder m_textures;// Later have input arguemnts that decides which type of texture to retrive. Game should handle all Texture objects (long Scope)
 	//Textures m_boardTexture(Textures::TextureType::BOARD) Like this <-
 
@@ -109,6 +134,7 @@ private:
 	// flag if player has passed or not. SHould be moved to the GameLogic class
 	bool m_blackPassed; 
 	bool m_whitePassed;
+	Stone::COLOR m_currentside;
 
 
 

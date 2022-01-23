@@ -3,6 +3,8 @@
 #include <cmath>
 #include <string>
 
+// Have all items relative eatch other. the block and white font is relative the board, 
+// the P button is relative the white font and so on.
 
 Game::Game()
     : m_passButton(m_textures)
@@ -10,87 +12,156 @@ Game::Game()
     , m_doneButton(m_textures)
     , m_yesButton(m_textures)
     , m_noButton(m_textures)
+    , m_9x9Button(m_textures)
+    , m_13x13Button(m_textures)
+    , m_19x19Button(m_textures)
     , m_blackPassed(0)
     , m_whitePassed(0)
-    , m_currentGameState(GameLogic::GameState::GamePlay)
+    , m_currentGameState(GameLogic::GameState::TitleScreen)
     , m_smallStone(m_textures)
+    , m_currentside(Stone::COLOR::BLACK)
+
 {
+    //Load board
+    //m_currentBoard.selectBoardSize(BOARDSIZE::BOARD_9x9);
 
-    //Load text font
-    m_fonts.load(FontHolder::FontID::Ariel, "Fonts/slkscre.ttf");
-    //Create and put text in array  
-    sf::Vector2u boardTextureSize(m_currentBoard.getBoardPixelSize());
-    TextStrings blackText(m_fonts,"BLACK: 0",sf::Color::White,10,sf::Text::Bold,sf::Vector2u(boardTextureSize.x/10, boardTextureSize.y*1.05));
-    m_textVector.emplace_back(blackText);
 
-    TextStrings whiteText(m_fonts, "WHITE: 0", sf::Color::White, 10, sf::Text::Bold, sf::Vector2u(boardTextureSize.x * 6 / 10, boardTextureSize.y * 1.05));
-    m_textVector.emplace_back(whiteText);
+    
 
-    TextStrings winnerDeclerationText(m_fonts, "", sf::Color::White, 10, sf::Text::Bold, sf::Vector2u(boardTextureSize.x / 4, boardTextureSize.y * 1.4));
-    m_textVector.emplace_back(winnerDeclerationText);
+    //Board
+    //BlackText WhiteText
+    // Pass symbol
+    // Pass button
+    //Winner decleration
+    // Play again?
+    // Yes No Buttons
 
-    TextStrings playAgainText(m_fonts, "PLAY AGAIN?", sf::Color::White, 10, sf::Text::Bold, sf::Vector2u(boardTextureSize.x / 4, boardTextureSize.y * 1.5));
-    m_textVector.emplace_back(playAgainText);
+    //float scale = 1; // Get this later from the m_currentBoard
+    // Hm det e sv[rare 'n jag trodde att 'ndra scale. tror index och andra saker p[verkas ocks[
 
-    //Put this in a function (init Stones)
-    sf::Image tempImage;
-    tempImage.loadFromFile("Sprites/white_black.png");
-    tempImage.createMaskFromColor(sf::Color::White);
-    m_textures.load(TextureHolder::ID::Stone, tempImage);
+    ////Load text font
+    //m_fonts.load(FontHolder::FontID::Ariel, "Fonts/slkscre.ttf");
+    ////Create and put text in array  
+    //sf::Vector2u boardTextureSize(m_currentBoard.getBoardPixelSize());
+    //
+    ////Scale if we need to change the scale of the Gameboard since it effects where buttons and texts are drawn
+    //boardTextureSize.x = boardTextureSize.x * scale;
+    //boardTextureSize.y = boardTextureSize.y * scale;
 
-    //Load Stone texture
-    //m_textures.load(TextureHolder::ID::Stone, "Sprites/white_black.png");
-    // resize the outer vector
-    m_stonePositions2d.resize(m_currentBoard.getCurrentBoardSize());
-    m_scoreStonePositions2d.resize(m_currentBoard.getCurrentBoardSize());
-    // resize in the inner vectors and fill every position with a Stone Object. (have to do all this because I dont have a default constructor)
-    for (int row = 0; row < m_currentBoard.getCurrentBoardSize(); row++) 
-    {
-        m_stonePositions2d[row].resize(m_currentBoard.getCurrentBoardSize(), Stone(m_textures, Stone::COLOR::NO_STONE, 1, 1));
-        m_scoreStonePositions2d[row].resize(m_currentBoard.getCurrentBoardSize(), Stone(m_textures, Stone::COLOR::NO_STONE, 1, 1));
+    //TextStrings blackText(m_fonts, "BLACK: 0", sf::Color::White, 10, sf::Text::Bold, sf::Vector2u(m_currentBoard.getBoardPixelSize().x +5,0 )); //boardTextureSize.x/10, boardTextureSize.y*1.05));
+    //m_textVector.emplace_back(blackText); // 0
 
-    }
+    //TextStrings whiteText(m_fonts, "WHITE: 0", sf::Color::White, 10, sf::Text::Bold, sf::Vector2u(m_textVector[BLACK].getText().getPosition().x + 80, m_textVector[BLACK].getText().getPosition().y)); //sf::Vector2u(boardTextureSize.x * 6 / 10, boardTextureSize.y * 1.05));
+    //m_textVector.emplace_back(whiteText); // 1
+
+    //TextStrings scoringPhase(m_fonts, "Scoring Phase", sf::Color::White, 10, sf::Text::Bold, sf::Vector2u(m_textVector[BLACK].getText().getPosition().x + 25, m_textVector[BLACK].getText().getPosition().y + 10));
+    //m_textVector.emplace_back(scoringPhase); // 2
+
+    //TextStrings winnerDeclerationText(m_fonts, "", sf::Color::White, 10, sf::Text::Bold, sf::Vector2u(m_textVector[BLACK].getText().getPosition().x + 30, m_textVector[BLACK].getText().getPosition().y + 50));// boardTextureSize.y * 1.4));
+    //m_textVector.emplace_back(winnerDeclerationText); // 3
+
+    //TextStrings playAgainText(m_fonts, "PLAY AGAIN?", sf::Color::White, 10, sf::Text::Bold, sf::Vector2u(m_textVector[WINNER].getText().getPosition().x, m_textVector[WINNER].getText().getPosition().y + 10));//boardTextureSize.y * 1.5));
+    //m_textVector.emplace_back(playAgainText); // 4
+
+    //Game::initText();
+
+    ////Put this in a function (init Stones)
+    //sf::Image tempImage;
+    //tempImage.loadFromFile("Sprites/white_black.png");
+    //tempImage.createMaskFromColor(sf::Color::White);
+    //m_textures.load(TextureHolder::ID::Stone, tempImage);
+
+    ////Load Stone texture
+    ////m_textures.load(TextureHolder::ID::Stone, "Sprites/white_black.png");
+    //// resize the outer vector
+    //m_stonePositions2d.resize(m_currentBoard.getCurrentBoardSize());
+    //m_scoreStonePositions2d.resize(m_currentBoard.getCurrentBoardSize());
+    //// resize in the inner vectors and fill every position with a Stone Object. (have to do all this because I dont have a default constructor)
+    //for (int row = 0; row < m_currentBoard.getCurrentBoardSize(); row++) 
+    //{
+    //    m_stonePositions2d[row].resize(m_currentBoard.getCurrentBoardSize(), Stone(m_textures, Stone::COLOR::NO_STONE, 1, 1, scale));
+    //    m_scoreStonePositions2d[row].resize(m_currentBoard.getCurrentBoardSize(), Stone(m_textures, Stone::COLOR::NO_STONE, 1, 1, scale));
+
+    //}
+
+    //sf::Image tempImage;
+
+    //// Load Pass indicator sprite.
+    //tempImage.loadFromFile("Sprites/passIcon.png");
+    //tempImage.createMaskFromColor(sf::Color::White);
+    //m_textures.load(TextureHolder::ID::PassIcon, tempImage);
+    //m_passIcon.loadSprite(TextureHolder::ID::PassIcon);
+    //m_passIcon.setScale(0.05, 0.05);
+    //m_passIcon.setPosition(sf::Vector2i(m_textVector[BLACK].getText().getPosition().x, m_textVector[BLACK].getText().getPosition().y + 10)); // Position changed when drawn
+
+   
+
 
     //Load  pass button sprite (put into function)
     //sf::Image tempImage;
-    tempImage.loadFromFile("Sprites/passbutton.png");
-    tempImage.createMaskFromColor(sf::Color::White);
-    m_textures.load(TextureHolder::ID::Pass, tempImage);
-    m_passButton.loadSprite(TextureHolder::ID::Pass);
-    m_passButton.setScale(0.1, 0.1);
-    m_passButton.setPosition(sf::Vector2i(60, 200));
+    //tempImage.loadFromFile("Sprites/passbutton.png");
+    //tempImage.createMaskFromColor(sf::Color::White);
+    //m_textures.load(TextureHolder::ID::Pass, tempImage);
+    //m_passButton.loadSprite(TextureHolder::ID::Pass);
+    //m_passButton.setScale(0.1, 0.1);
+    //m_passButton.setPosition(sf::Vector2i(m_textVector[SCORING_PHASE].getText().getPosition().x + 20, m_textVector[SCORING_PHASE].getText().getPosition().y + 5));
+   
 
-    // Load Pass indicator sprite.
-    tempImage.loadFromFile("Sprites/passIcon.png");
-    tempImage.createMaskFromColor(sf::Color::White);
-    m_textures.load(TextureHolder::ID::PassIcon, tempImage);
-    m_passIcon.loadSprite(TextureHolder::ID::PassIcon);
-    m_passIcon.setScale(0.05, 0.05);
-    m_passIcon.setPosition(sf::Vector2i(m_textVector[0].getText().getPosition().x, m_textVector[0].getText().getPosition().y + 10)); // 100, 190
 
-    // Load Done Button sprite
-    tempImage.loadFromFile("Sprites/doneButton.png"); // Temporary, change to DONE button
-    tempImage.createMaskFromColor(sf::Color::White);
-    m_textures.load(TextureHolder::ID::Done, tempImage);
-    m_doneButton.loadSprite(TextureHolder::ID::Done);
-    m_doneButton.setScale(0.1, 0.1);
-    m_doneButton.setPosition(sf::Vector2i(60, 200)); 
+    //// Load Done Button sprite
+    //tempImage.loadFromFile("Sprites/doneButton.png"); // Temporary, change to DONE button
+    //tempImage.createMaskFromColor(sf::Color::White);
+    //m_textures.load(TextureHolder::ID::Done, tempImage);
+    //m_doneButton.loadSprite(TextureHolder::ID::Done);
+    //m_doneButton.setScale(0.1, 0.1);
+    //m_doneButton.setPosition(sf::Vector2i(m_textVector[SCORING_PHASE].getText().getPosition().x + 20, m_textVector[SCORING_PHASE].getText().getPosition().y + 5));
 
-    // Load yes button sprite
-    tempImage.loadFromFile("Sprites/yesButton.png"); // Temporary, change to DONE button
-    tempImage.createMaskFromColor(sf::Color::White);
-    m_textures.load(TextureHolder::ID::Yes, tempImage);
-    m_yesButton.loadSprite(TextureHolder::ID::Yes);
-    m_yesButton.setScale(0.1, 0.1);
-    m_yesButton.setPosition(sf::Vector2i(boardTextureSize.x / 5, boardTextureSize.y * 1.5));
+   
 
+
+    //// Load yes button sprite
+    //tempImage.loadFromFile("Sprites/yesButton.png"); // Temporary, change to DONE button
+    //tempImage.createMaskFromColor(sf::Color::White);
+    //m_textures.load(TextureHolder::ID::Yes, tempImage);
+    //m_yesButton.loadSprite(TextureHolder::ID::Yes);
+    //m_yesButton.setScale(0.1, 0.1);
+    //m_yesButton.setPosition(sf::Vector2i(m_textVector[PLAY_AGAIN].getText().getPosition().x-10, m_textVector[PLAY_AGAIN].getText().getPosition().y));//boardTextureSize.y * 1.5));
+
+   
     // Load no button sprite
-    tempImage.loadFromFile("Sprites/noButton.png"); // Temporary, change to DONE button
-    tempImage.createMaskFromColor(sf::Color::White);
-    m_textures.load(TextureHolder::ID::No, tempImage);
-    m_noButton.loadSprite(TextureHolder::ID::No);
-    m_noButton.setScale(0.1, 0.1);
-    m_noButton.setPosition(sf::Vector2i(boardTextureSize.x / 2, boardTextureSize.y * 1.5));
+    //tempImage.loadFromFile("Sprites/noButton.png"); // Temporary, change to DONE button
+    //tempImage.createMaskFromColor(sf::Color::White);
+    //m_textures.load(TextureHolder::ID::No, tempImage);
+    //m_noButton.loadSprite(TextureHolder::ID::No);
+    //m_noButton.setScale(0.1, 0.1);
+    //m_noButton.setPosition(sf::Vector2i(m_textVector[PLAY_AGAIN].getText().getPosition().x + 40, m_textVector[PLAY_AGAIN].getText().getPosition().y));//boardTextureSize.y * 1.5));
+
+    
+    //// Load 9x9 button
+    //tempImage.loadFromFile("Sprites/9x9.png"); 
+    //tempImage.createMaskFromColor(sf::Color::White);
+    //m_textures.load(TextureHolder::ID::NINE, tempImage);
+    //m_9x9Button.loadSprite(TextureHolder::ID::NINE);
+    //m_9x9Button.setScale(2, 2);
+    //m_9x9Button.setPosition(sf::Vector2i(100, 100));
+
+
+    //// Load 13x13 button
+    //tempImage.loadFromFile("Sprites/13x13.png"); 
+    //tempImage.createMaskFromColor(sf::Color::White);
+    //m_textures.load(TextureHolder::ID::THIRTEEN, tempImage);
+    //m_13x13Button.loadSprite(TextureHolder::ID::THIRTEEN);
+    //m_13x13Button.setScale(2, 2);
+    //m_13x13Button.setPosition(sf::Vector2i(200, 100));
+
+
+    //// Load 19x19 button
+    //tempImage.loadFromFile("Sprites/19x19.png"); 
+    //tempImage.createMaskFromColor(sf::Color::White);
+    //m_textures.load(TextureHolder::ID::NINETEEN, tempImage);
+    //m_19x19Button.loadSprite(TextureHolder::ID::NINETEEN);
+    //m_19x19Button.setScale(2, 2);
+    //m_19x19Button.setPosition(sf::Vector2i(320, 100));
 
 
     //tempImage.loadFromFile("Sprites/black.png");
@@ -161,12 +232,39 @@ bool Game::interact(sf::RenderWindow & window)
 
 void Game::drawGame(sf::RenderWindow& window)
 {
+
+    if (m_currentGameState == GameLogic::GameState::TitleScreen)
+    {
+        window.draw(m_9x9Button.getSprite());
+        window.draw(m_13x13Button.getSprite());
+        window.draw(m_19x19Button.getSprite());
+
+    }
+
     if (m_currentGameState == GameLogic::GameState::GamePlay)
     {
         drawBoard(window);
         drawStones(window);
         window.draw(m_passButton.getSprite());
 
+
+        // Put into function.
+        sf::Vertex line[2];
+        line[0].color = sf::Color::White;
+        line[1].color = sf::Color::White;
+        if (m_currentside == Stone::COLOR::BLACK)
+        {
+            line[0].position = sf::Vector2f(m_textVector[BLACK].getPosition().x, m_textVector[BLACK].getPosition().y + 12);
+            line[1].position = sf::Vector2f(m_textVector[BLACK].getPosition().x + 50 , m_textVector[BLACK].getPosition().y + 12);
+        }
+        else
+        {
+            line[0].position = sf::Vector2f(m_textVector[WHITE].getPosition().x, m_textVector[WHITE].getPosition().y + 12);
+            line[1].position = sf::Vector2f(m_textVector[WHITE].getPosition().x + 50, m_textVector[WHITE].getPosition().y + 12);
+        }
+        window.draw(line, 2, sf::Lines);
+
+        
         // put into function
         if (m_blackPassed)
         {
@@ -193,6 +291,7 @@ void Game::drawGame(sf::RenderWindow& window)
         drawStonesScoring(window);
         window.draw(m_doneButton.getSprite());
         Game::drawText(window);
+        window.draw(m_textVector[2].getText());
 
 
     }
@@ -204,8 +303,8 @@ void Game::drawGame(sf::RenderWindow& window)
         drawStonesScoring(window);
         window.draw(m_doneButton.getSprite());
         Game::drawText(window);
-        window.draw(m_textVector[2].getText()); //Winner text (maybe change to enum)
-        window.draw(m_textVector[3].getText()); //Play again text (maybe change to enum)
+        window.draw(m_textVector[3].getText()); //Winner text (maybe change to enum)
+        window.draw(m_textVector[4].getText()); //Play again text (maybe change to enum)
         window.draw(m_yesButton.getSprite());
         window.draw(m_noButton.getSprite());
         
@@ -222,6 +321,42 @@ void Game::makeMove(Stone::COLOR side)
 
 void Game::update(sf::RenderWindow& window, GameLogic& GameState)
 {
+    if (m_currentGameState == GameLogic::GameState::TitleScreen)
+    {
+        static int first = 1;
+
+        if (first)
+        {
+            // initilize the Board size buttons. (we need to do this first before we initialise Stone vector and text etc.
+            initBaseSpriteObject(m_9x9Button, "Sprites/9x9.png", TextureHolder::ID::NINE, 2, sf::Vector2i(100, 100));
+            initBaseSpriteObject(m_13x13Button, "Sprites/13x13.png", TextureHolder::ID::THIRTEEN, 2, sf::Vector2i(200, 100));
+            initBaseSpriteObject(m_19x19Button, "Sprites/19x19.png", TextureHolder::ID::NINETEEN, 2, sf::Vector2i(320, 100));
+            first = 0;
+            return;
+        }
+        if (handleBoardSizeButtonFunctionality())
+        {
+            // --Initilize Game--
+            // Set stone vector length
+            Game::initStoneVectors(); // Have to do it here since it depends on the board size
+            // Initilize and set text and button positions. (depends on board size)
+            Game::initText();
+            initBaseSpriteObject(m_passIcon, "Sprites/passIcon.png", TextureHolder::ID::PassIcon, 0.05, sf::Vector2i(m_textVector[BLACK].getText().getPosition().x, m_textVector[BLACK].getText().getPosition().y + 10));
+            initBaseSpriteObject(m_passButton, "Sprites/passbutton.png", TextureHolder::ID::Pass, 0.1, sf::Vector2i(m_textVector[SCORING_PHASE].getText().getPosition().x + 20, m_textVector[SCORING_PHASE].getText().getPosition().y + 5));
+            initBaseSpriteObject(m_doneButton, "Sprites/doneButton.png", TextureHolder::ID::Done, 0.1, sf::Vector2i(m_textVector[SCORING_PHASE].getText().getPosition().x + 20, m_textVector[SCORING_PHASE].getText().getPosition().y + 5));
+            initBaseSpriteObject(m_yesButton, "Sprites/yesButton.png", TextureHolder::ID::Yes, 0.1, sf::Vector2i(m_textVector[PLAY_AGAIN].getText().getPosition().x - 10, m_textVector[PLAY_AGAIN].getText().getPosition().y));
+            initBaseSpriteObject(m_noButton, "Sprites/noButton.png", TextureHolder::ID::No, 0.1, sf::Vector2i(m_textVector[PLAY_AGAIN].getText().getPosition().x + 40, m_textVector[PLAY_AGAIN].getText().getPosition().y));
+        }
+
+
+
+       
+
+
+        return;
+    }
+
+
 
     // Have another GameState here called GameSetup where we set the Boardsize. 
     // #DONE Step 0  create the two other game boards in paint.
@@ -233,9 +368,12 @@ void Game::update(sf::RenderWindow& window, GameLogic& GameState)
     // kommentar, I andra GO spel n'r man valjer bigger or osmaller screen, the stones become bigger and smaller but the screen size remains the same.
     if (m_currentGameState == GameLogic::GameState::GamePlay)
     {
+        
+
         Game::handlePassFunctionality(GameState);
         Game::handleMakingMoveLogic(window, GameState);
         GameState.setWinner(); // Set current winner if the game would finish without counting territory
+        m_currentside = GameState.getCurrentSide();
         return;
     }
 
@@ -432,15 +570,103 @@ void Game::updateWinnerText(GameLogic& GameState)
 {
     if (GameState.getWinner() == Stone::COLOR::BLACK)
     {
-        m_textVector[2].setText("BLACK WINNS!");
+        m_textVector[WINNER].setText("BLACK WINNS!");
     }
     else if (GameState.getWinner() == Stone::COLOR::WHITE)
     {
-        m_textVector[2].setText("WHITE WINNS!");
+        m_textVector[WINNER].setText("WHITE WINNS!");
     }
     else
-        m_textVector[2].setText("DRAW!");
+        m_textVector[WINNER].setText("DRAW!");
 
+
+}
+
+void Game::initStoneVectors()
+{
+    //Put this in a function (init Stones)
+    sf::Image tempImage;
+    tempImage.loadFromFile("Sprites/white_black.png");
+    tempImage.createMaskFromColor(sf::Color::White);
+    m_textures.load(TextureHolder::ID::Stone, tempImage);
+      
+    // resize the outer vector
+    m_stonePositions2d.resize(m_currentBoard.getCurrentBoardSize());
+    m_scoreStonePositions2d.resize(m_currentBoard.getCurrentBoardSize());
+    // resize in the inner vectors and fill every position with a Stone Object. (have to do all this because I dont have a default constructor)
+    for (int row = 0; row < m_currentBoard.getCurrentBoardSize(); row++)
+    {
+        m_stonePositions2d[row].resize(m_currentBoard.getCurrentBoardSize(), Stone(m_textures, Stone::COLOR::NO_STONE, 1, 1, 1));
+        m_scoreStonePositions2d[row].resize(m_currentBoard.getCurrentBoardSize(), Stone(m_textures, Stone::COLOR::NO_STONE, 1, 1, 1));
+
+    }
+}
+
+void Game::initBaseSpriteObject(BaseSprite & sprite,const std::string& filename, TextureHolder::ID id, float scale, sf::Vector2i pos)
+{
+
+    sf::Image tempImage;
+    // Load Pass indicator sprite.
+    tempImage.loadFromFile(filename);
+    tempImage.createMaskFromColor(sf::Color::White);
+    m_textures.load(id, tempImage);
+    sprite.loadSprite(id);
+    sprite.setScale(scale, scale);
+    sprite.setPosition(pos);
+
+}
+
+void Game::initText()
+{
+    //Load text font
+    m_fonts.load(FontHolder::FontID::Ariel, "Fonts/slkscre.ttf");
+    //Create and put text in array  
+    //sf::Vector2u boardTextureSize(m_currentBoard.getBoardPixelSize());
+
+    TextStrings blackText(m_fonts, "BLACK: 0", sf::Color::White, 10, sf::Text::Bold, sf::Vector2u(m_currentBoard.getBoardPixelSize().x + 5, 0)); //boardTextureSize.x/10, boardTextureSize.y*1.05));
+    m_textVector.emplace_back(blackText); // 0
+
+    TextStrings whiteText(m_fonts, "WHITE: 0", sf::Color::White, 10, sf::Text::Bold, sf::Vector2u(m_textVector[BLACK].getText().getPosition().x + 80, m_textVector[BLACK].getText().getPosition().y)); //sf::Vector2u(boardTextureSize.x * 6 / 10, boardTextureSize.y * 1.05));
+    m_textVector.emplace_back(whiteText); // 1
+
+    TextStrings scoringPhase(m_fonts, "Scoring Phase", sf::Color::White, 10, sf::Text::Bold, sf::Vector2u(m_textVector[BLACK].getText().getPosition().x + 25, m_textVector[BLACK].getText().getPosition().y + 10));
+    m_textVector.emplace_back(scoringPhase); // 2
+
+    TextStrings winnerDeclerationText(m_fonts, "", sf::Color::White, 10, sf::Text::Bold, sf::Vector2u(m_textVector[BLACK].getText().getPosition().x + 30, m_textVector[BLACK].getText().getPosition().y + 50));// boardTextureSize.y * 1.4));
+    m_textVector.emplace_back(winnerDeclerationText); // 3
+
+    TextStrings playAgainText(m_fonts, "PLAY AGAIN?", sf::Color::White, 10, sf::Text::Bold, sf::Vector2u(m_textVector[WINNER].getText().getPosition().x, m_textVector[WINNER].getText().getPosition().y + 10));//boardTextureSize.y * 1.5));
+    m_textVector.emplace_back(playAgainText); // 4
+
+}
+
+bool Game::handleBoardSizeButtonFunctionality()
+{
+    // If returns true then the user has selected a board and we can continue to initilise everything with the right size.
+    sf::FloatRect v9x9ButtonBounds = m_9x9Button.getSprite().getGlobalBounds();
+    sf::FloatRect v13x13ButtonBounds = m_13x13Button.getSprite().getGlobalBounds();
+    sf::FloatRect v19x19ButtonBounds = m_19x19Button.getSprite().getGlobalBounds();
+
+    if (v9x9ButtonBounds.contains(m_worldMousePos))
+    {
+        m_currentBoard.selectBoardSize(BOARD_9x9);
+        m_currentGameState = GameLogic::GameState::GamePlay;
+        return true;
+    }
+    else if (v13x13ButtonBounds.contains(m_worldMousePos))
+    {
+        m_currentBoard.selectBoardSize(BOARD_13x13);
+        m_currentGameState = GameLogic::GameState::GamePlay;
+        return true;
+    }
+    else if (v19x19ButtonBounds.contains(m_worldMousePos))
+    {
+        m_currentBoard.selectBoardSize(BOARD_19x19);
+        m_currentGameState = GameLogic::GameState::GamePlay;
+        return true;
+    }
+    else
+        return false;         //Do nothing, clicked outside of the buttons.
 
 }
 
@@ -457,9 +683,8 @@ void Game::handleMakingMoveLogic(sf::RenderWindow& window, GameLogic& GameState)
     }
 
     bool isSquareEmpty = GameState.checkIfSquareEmpty(m_stonePositions2d[clickedBoardPositionIndex.x][clickedBoardPositionIndex.y]);
-
-    bool possibleSuicideMove = false;
-    bool possibleIllegalKoMove = false;
+    bool possibleSuicideMove = false; //reset these before we start
+    bool possibleIllegalKoMove = false; //reset these before we start
     //Put into a method func addMoveToVector().
     if (isSquareEmpty)
     {
@@ -470,13 +695,14 @@ void Game::handleMakingMoveLogic(sf::RenderWindow& window, GameLogic& GameState)
             possibleSuicideMove = true;
         // Check if move is KO
         if (GameState.checkKoCoordsSameAsCurrentMove(clickedBoardPositionIndex))// Have to take into account which side makes the move
-            possibleIllegalKoMove = true;
+            possibleIllegalKoMove = true; //Not sure yet if its KO or not because if more than 1 stones dies it is NOT KO
 
-        //Make the move. (maybe put into func)
+        //Make the move. (can be reversed if it was a KO move) (maybe put into func)
         m_stonePositions2d[clickedBoardPositionIndex.x][clickedBoardPositionIndex.y].setSide(GameState.getCurrentSide());
         m_stonePositions2d[clickedBoardPositionIndex.x][clickedBoardPositionIndex.y].setSprite(GameState.getCurrentSide());
         sf::Vector2u stoneTextureSize(m_stonePositions2d[0][0].getStonePixelSize());
         // quick hack to just move the origin of the stons to the center of the stone instead of the top left corner (makes scaling easier later)
+        // Edit; this "hack" should be done elsewhere, not in the logic...
         float originOffset = 9.5;
         m_stonePositions2d[clickedBoardPositionIndex.x][clickedBoardPositionIndex.y].setOrigin(originOffset, originOffset);
         //
@@ -491,27 +717,29 @@ void Game::handleMakingMoveLogic(sf::RenderWindow& window, GameLogic& GameState)
     }
 
 
-    int nrOfDeadStones = 0;
+    int nrOfDeadStones = 0; //reset this before we start
     //Check if the move just made caused any dead stones for the opponent.
     if (GameState.getCurrentSide() == Stone::COLOR::BLACK) // Black made a move, remove dead stones for white
     {
-        // If no stones where killed AND the move was a possible suicide move then revert the move and simply return because
-        // It is an illegal move.
+        // If no stones where killed AND the move was a possible suicide move then revert the move and simply return because...
+        // ... It is an illegal move.
         nrOfDeadStones = GameState.removeDeadStones(Stone::COLOR::WHITE, m_currentBoard.getCurrentBoardSize(), m_stonePositions2d, 0);
         if (!nrOfDeadStones && possibleSuicideMove)
         {
-            m_stonePositions2d[clickedBoardPositionIndex.x][clickedBoardPositionIndex.y].setSide(Stone::COLOR::NO_STONE); //revert move
+            m_stonePositions2d[clickedBoardPositionIndex.x][clickedBoardPositionIndex.y].setSide(Stone::COLOR::NO_STONE); //revert move because its a suicide move
             return;
         }
-        else if (nrOfDeadStones > 1)
+        else if (nrOfDeadStones > 1) //cant be KO if more than 1 stone died.
             GameState.resetKoCoords();
         // if ONE single stone died by the move and the position was flagged as a KO move then it truley was a KO so revert and return
         else if (nrOfDeadStones == 1 && possibleIllegalKoMove)
         {
-            m_stonePositions2d[clickedBoardPositionIndex.x][clickedBoardPositionIndex.y].setSide(Stone::COLOR::NO_STONE); //revert move
+            m_stonePositions2d[clickedBoardPositionIndex.x][clickedBoardPositionIndex.y].setSide(Stone::COLOR::NO_STONE); //revert move just made
+             // Also revert the stone that died.
+            // Revert the single captured stone.
+            GameState.revertCapturedStone(m_stonePositions2d, Stone::COLOR::WHITE);
             return;
         }
-
     }
     else // White made a move, remove dead stones for Black.
     {
@@ -527,6 +755,7 @@ void Game::handleMakingMoveLogic(sf::RenderWindow& window, GameLogic& GameState)
         else if (nrOfDeadStones == 1 && possibleIllegalKoMove)
         {
             m_stonePositions2d[clickedBoardPositionIndex.x][clickedBoardPositionIndex.y].setSide(Stone::COLOR::NO_STONE); //revert move
+            GameState.revertCapturedStone(m_stonePositions2d, Stone::COLOR::BLACK);
             return;
         }
 

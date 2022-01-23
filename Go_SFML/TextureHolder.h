@@ -22,7 +22,10 @@ public:
 		StoneBlack,
 		Done,
 		Yes,
-		No
+		No,
+		NINE,
+		THIRTEEN,
+		NINETEEN
 	};
 
 	// given the ID and filename we "load" the map with the requested texture.

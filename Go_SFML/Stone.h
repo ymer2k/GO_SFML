@@ -21,7 +21,7 @@ public:
 	//Stone(color side, const Location& location); // A default constructor BECAUSE of the default consturctor the Stone vector will not be empty, it will be filled of these default Stones...
 	//How to avoid printing these default stones? Have a default NO_STONE value? and check if NO_STONE dont draw?
 	//Stone(Textures *whiteAndBlackTexture, COLOR side = NO_STONE, int x = 0, int y = 0); // maybe stone should have an ID as well, stone 1 stone 2 etc. Passing Textures objet by reference instead of by value
-	Stone(TextureHolder& texture, COLOR side, float x, float y);
+	Stone(TextureHolder& texture, COLOR side, float x, float y, float scale);
 	//Stone(COLOR side = NO_STONE, int x = 0, int y = 0); // maybe stone should have an ID as well, stone 1 stone 2 etc.
 	
 
@@ -58,6 +58,8 @@ private:
 
 	float m_x;
 	float m_y;
+
+	float m_scale;
 
 
 

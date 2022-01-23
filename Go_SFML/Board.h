@@ -16,7 +16,9 @@ class Board
 
 
 public:
-	Board(BOARDSIZE boardSize = BOARDSIZE::BOARD_9x9); // Constructor //Maybe in the constructor have input arguments be board size.
+	//Board(BOARDSIZE boardSize = BOARDSIZE::BOARD_9x9); // Constructor //Maybe in the constructor have input arguments be board size.
+	Board();
+
 
 	sf::RectangleShape getBoard();
 	BOARDSIZE getCurrentBoardSize();

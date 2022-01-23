@@ -3,7 +3,7 @@
 
 
 
-Stone::Stone(TextureHolder &texture, COLOR side, float x, float y) : //Change int x, int y to sf::vector2i
+Stone::Stone(TextureHolder &texture, COLOR side, float x, float y, float scale) : //Change int x, int y to sf::vector2i
 	m_location(x, y) // Instead of m_location(location) // Not used now
 	//,m_stoneTextures(whiteAndBlackTexture)
 	,m_texture(texture)
@@ -12,6 +12,7 @@ Stone::Stone(TextureHolder &texture, COLOR side, float x, float y) : //Change in
 	,m_side(side)
 	,m_pieceTexture()
 	,m_pieceTextureSize()
+	,m_scale(scale)
 {
 
 	loadSprite();
@@ -73,6 +74,9 @@ void Stone::loadSprite()
 	}
 	else
 		m_stoneSprite.setTextureRect(sf::IntRect(0, 0, m_pieceTextureSize.x, m_pieceTextureSize.y));
+
+	// Set scale of sprite
+	m_stoneSprite.setScale(m_scale, m_scale);
 }
 
 void Stone::setPosition(float x, float y)

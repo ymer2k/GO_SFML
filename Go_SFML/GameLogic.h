@@ -35,6 +35,7 @@ public:
 	void setWinner(); // Saves the side with highest score.
 	Stone::COLOR getWinner();
 	void resetEverything();
+	void revertCapturedStone(std::vector<std::vector<Stone>>& stonePositions2d, Stone::COLOR capturedStoneSide);
 
 
 
@@ -74,7 +75,7 @@ private:
 	// Keeps track of what stones are considered dead in the "check dead stones logic" 
 	bool m_deadStones[MAX_BOARD_SIZE][MAX_BOARD_SIZE] = { false };
 	// keep track of Ko location;
-	sf::Vector2i currentKoPos;
+	sf::Vector2i currentKoPos; ///////////////////////////// NOT USED DELETE
 	int m_blackCaptureScore;
 	int m_whiteCaptureScore;
 
