@@ -153,35 +153,25 @@
   <ItemGroup>
     <ClCompile Include="BaseSprite.cpp" />
     <ClCompile Include="Board.cpp" />
-    <ClCompile Include="Command.cpp" />
     <ClCompile Include="FontHolder.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameLogic.cpp" />
-    <ClCompile Include="InputHandler.cpp" />
-    <ClCompile Include="PlaceStoneCommand.cpp" />
     <ClCompile Include="Render.cpp" />
-    <ClCompile Include="Location.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Stone.cpp" />
     <ClCompile Include="TextStrings.cpp" />
     <ClCompile Include="TextureHolder.cpp" />
-    <ClCompile Include="Textures.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BaseSprite.h" />
     <ClInclude Include="Board.h" />
-    <ClInclude Include="Command.h" />
     <ClInclude Include="FontHolder.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameLogic.h" />
-    <ClInclude Include="InputHandler.h" />
-    <ClInclude Include="PlaceStoneCommand.h" />
     <ClInclude Include="Render.h" />
-    <ClInclude Include="Location.h" />
     <ClInclude Include="Stone.h" />
     <ClInclude Include="TextStrings.h" />
     <ClInclude Include="TextureHolder.h" />
-    <ClInclude Include="Textures.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

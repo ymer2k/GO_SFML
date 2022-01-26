@@ -16,7 +16,6 @@ void TextureHolder::load(ID id, const std::string& filename)
 
 void TextureHolder::load(ID id, const sf::Image image)
 {
-
 	std::unique_ptr<sf::Texture> texture(new sf::Texture()); // Create a unique pointer of type sf::Texture and allocate space for a sf::Texture
 	texture->loadFromImage(image);
 
@@ -24,8 +23,6 @@ void TextureHolder::load(ID id, const sf::Image image)
 	// we do this instead of copying. Unique_ptr can not be copied, it has to use the move() function.
 	m_textureMap.insert(std::make_pair(id, std::move(texture)));
 }
-
-
 
 sf::Texture& TextureHolder::get(ID id)
 {

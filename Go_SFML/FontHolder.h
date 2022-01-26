@@ -12,8 +12,7 @@ public :
 
 	enum class FontID
 	{
-		Ariel,
-		ComicSans,
+		PixelFont
 	};
 
 	// given the ID and filename we "load" the map with the requested texture.

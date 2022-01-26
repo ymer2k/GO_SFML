@@ -15,7 +15,6 @@ public:
 	sf::Vector2u getTexturePixelSize();
 	void loadSprite(TextureHolder::ID id);
 	void loadTransparentSprite();
-	void makeWhiteTransparent();
 	void setScale(float x, float y);
 	void setOrigin(float x, float y);
 	

@@ -34,15 +34,6 @@ void BaseSprite::loadTransparentSprite()
 	m_sprite.setTexture(m_texture);
 }
 
-void BaseSprite::makeWhiteTransparent()
-{
-	sf::Texture m_texture = m_textureHolder.get(TextureHolder::ID::Toad);
-	sf::Image m_image = m_texture.copyToImage();
-	m_image.createMaskFromColor(sf::Color::White);
-	m_texture.loadFromImage(m_image);
-
-}
-
 void BaseSprite::setScale(float x, float y)
 {
 	m_sprite.scale(x, y);

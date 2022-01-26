@@ -17,8 +17,5 @@ private:
 	int m_textSize;
 	sf::Uint32 m_style;
 	sf::Vector2f m_position;
-
-	std::string m_newText;
-
 };
 

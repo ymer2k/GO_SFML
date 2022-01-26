@@ -5,19 +5,13 @@ Board::Board():
 	m_board()
 ,   m_boardTexture()
 ,   m_boardTextureSize()
-,   m_boardSize(BOARD_19x19)
-
-
+,   m_boardSize(BOARDSIZE::BOARD_19x19)
 {
-	//m_boardSize = boardSize;
-	//selectBoardSize(boardSize);
 }
-
-
 
 void Board::selectBoardSize(BOARDSIZE boardSize)
 {
-	if (boardSize == BOARD_9x9) // 9x9_BOARD == 1
+	if (boardSize == BOARDSIZE::BOARD_9x9)
 	{
 		//create 9x9 board texture
 		m_boardTexture.loadFromFile("Sprites/9x9_board.png");
@@ -26,9 +20,8 @@ void Board::selectBoardSize(BOARDSIZE boardSize)
 		m_board.setTexture(&m_boardTexture);
 		m_boardSize = BOARDSIZE::BOARD_9x9;
 		// Set m_currentBoardScale // Get this in the Game class to adjust for a scale difference in bordsize.
-
 	}
-	else if (boardSize == BOARD_13x13) //13x13_BOARD == 2
+	else if (boardSize == BOARDSIZE::BOARD_13x13)
 	{
 		//create 13x13 board texture
 		m_boardTexture.loadFromFile("Sprites/13x13_board.png");
@@ -38,7 +31,7 @@ void Board::selectBoardSize(BOARDSIZE boardSize)
 		m_boardSize = BOARDSIZE::BOARD_13x13;
 		// Set m_currentBoardScale // Get this in the Game class to adjust for a scale difference in bordsize.
 	}
-	else if (boardSize == BOARD_19x19) // 19x19_BOARD == 3
+	else if (boardSize == BOARDSIZE::BOARD_19x19)
 	{
 		m_boardTexture.loadFromFile("Sprites/19x19_board.png");
 		m_boardTextureSize = m_boardTexture.getSize();

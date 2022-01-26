@@ -9,13 +9,12 @@ TextStrings::TextStrings(FontHolder& font, const std::string& string, sf::Color 
 	, m_style(style)
 	, m_position(pos)
 {
-	m_text.setFont(font.get(FontHolder::FontID::Ariel));
+	m_text.setFont(font.get(FontHolder::FontID::PixelFont));
 	m_text.setString(m_textString);
 	m_text.setFillColor(m_color);
 	m_text.setCharacterSize(m_textSize);
 	//m_text.setStyle(m_style);
 	m_text.setPosition(m_position);
-	
 }
 
 sf::Text TextStrings::getText()

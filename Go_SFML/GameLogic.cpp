@@ -24,53 +24,27 @@ GameLogic::GameLogic():
 	, m_whiteTerritoryScore(0)
 	, m_winner(Stone::COLOR::NO_STONE)
 {
-
-}
-
-void GameLogic::rungame()
-{
 }
 
 sf::Vector2i GameLogic::findClickedBoardPositionIndex(sf::Vector2f worldMousePos, Board& currentBoard, sf::Vector2u stoneTexturePixelSize) //Only have board size instead of board object as input argument
 {
 	m_currentBoardSize = (int) currentBoard.getCurrentBoardSize();
 	// Checks every square area on the board to find which square the mouse clicked in.
-	for (int row = 0; row < currentBoard.getCurrentBoardSize(); row++)
+	for (int row = 0; row < static_cast<int>(currentBoard.getCurrentBoardSize()); row++)
 	{
-		for (int col = 0; col < currentBoard.getCurrentBoardSize(); col++)
+		for (int col = 0; col < static_cast<int>(currentBoard.getCurrentBoardSize()); col++)
 		{
-
-			sf::Vector2i piecePos;
-			piecePos.x = col * stoneTexturePixelSize.x;
-			piecePos.y = row * stoneTexturePixelSize.y;
+			//Top left corner of the clicked area
+			sf::Vector2i piecePos(col * stoneTexturePixelSize.x, row * stoneTexturePixelSize.y);
+			// Bottom right corner of clicked area
 			int x2 = piecePos.x + stoneTexturePixelSize.x;
 			int y2 = piecePos.y + stoneTexturePixelSize.y;
-
 			if (isInsideArea(piecePos.x, piecePos.y, x2, y2, worldMousePos.x, worldMousePos.y))
-			{
-				//// TODO Move to a function in gameLogic that calls this vector?
-				//if (THStoneLocations[col][row].z != 0) //If not empty
-				//{
-				//	//blank
-				//}
-				//else
-				//{
-				//	THStoneLocations[col][row] = piecePos;
-				//	side == 2 ? side = 1 : side = 2;  // change sides.
-				//}
-				//StoneLocations[col][row] = piecePos; // stores the pices locations.
-
-				sf::Vector2i retVal(col, row);
-				return retVal;
-
-			}
-
+				return sf::Vector2i(col, row);
 		}
 	}
 	//Clicked outside of Board
-	return sf::Vector2i(-1, -1); //invalid value.
-	
-	
+	return sf::Vector2i(-1, -1); //invalid value.	
 }
 
 bool GameLogic::checkIfSquareEmpty(Stone stone)
@@ -111,17 +85,14 @@ bool GameLogic::isInsideArea(int x1, int y1, int x2, int y2, int x, int y)
 
 int GameLogic::removeDeadStones(Stone::COLOR side, int boardSize, std::vector<std::vector<Stone>>& stonePositions2d,int checkSuicide)
 {
-	
 	int deadStones[MAX_BOARD_SIZE][MAX_BOARD_SIZE] = { 0 };
 
-	
-
 	//Check the stones NOT from the side that just made a move. ( Example: if black made a move, check if any white stones died)
-	// Loop through all positions on the board and skip empty and not current side stone.
+	// Loop through all positions on the board and skip empty and not current side stones.
 	for (int x = 0; x < boardSize; x++)
 		for (int y = 0; y < boardSize; y++)
 		{
-			if (stonePositions2d[x][y].getSide() != side)
+			if (stonePositions2d[x][y].getSide() != side) // Only check if the move caused any dead stones for "side"
 			{
 				continue;
 			}
@@ -141,11 +112,8 @@ int GameLogic::removeDeadStones(Stone::COLOR side, int boardSize, std::vector<st
 		if (deadStones[x][y] == 1)
 		{
 			nrOfDeadStones++;
-			//possibleKoPos.x = x;
-			//possibleKoPos.y = y;
 			dataKo.possibleKoPos.x = x;
 			dataKo.possibleKoPos.y = y;
-
 			stonePositions2d[x][y].setSide(Stone::COLOR::NO_STONE);
 		}
 	}
@@ -154,7 +122,6 @@ int GameLogic::removeDeadStones(Stone::COLOR side, int boardSize, std::vector<st
 		dataKo.oneStoneDied = true;
 		// Save the position of the dead stone so we can revert it IF it turns out to be a KO move.
 	}
-
 	return nrOfDeadStones;
 }
 
@@ -165,8 +132,6 @@ bool GameLogic::isKo(Stone::COLOR side, int boardSize, std::vector<std::vector<S
 	int y = dataKo.possibleKoPos.y;
 	if (dataKo.oneStoneDied) // There can only be KO if ONE single stone died.
 	{
-
-
 		//Check if surrounding stones are of same color as the player that made a move this turn. 
 		//Also make sure we are not out of bounds! being out of bounds is same as being surrounded by a stone on that side
 		retVal = ((x - 1) < 0) || (side == stonePositions2d[x - 1][y].getSide());
@@ -176,7 +141,6 @@ bool GameLogic::isKo(Stone::COLOR side, int boardSize, std::vector<std::vector<S
 
 		dataKo.oneStoneDied = false; //reset
 		return  retVal;
-
 	}
 
 	dataKo.oneStoneDied = false; //reset
@@ -222,7 +186,6 @@ bool GameLogic::checkForSuicideMove(Stone::COLOR side, int boardSize, std::vecto
 		stonePositions2d[currentMove.x][currentMove.y].setSide(Stone::COLOR::NO_STONE);
 		return false;
 	}
-		
 }
 
 void GameLogic::updateScore(int nrOfDeadStones, Stone::COLOR side)
@@ -230,15 +193,13 @@ void GameLogic::updateScore(int nrOfDeadStones, Stone::COLOR side)
 	if (side == Stone::COLOR::BLACK)
 	{
 		m_blackCaptureScore += nrOfDeadStones;
-		std::cout << "Black: " << m_blackCaptureScore << std::endl;
-
+		//std::cout << "Black: " << m_blackCaptureScore << std::endl; //Debugging
 	}
 	else
 	{
 		m_whiteCaptureScore += nrOfDeadStones;
-		std::cout << "White: " << m_whiteCaptureScore << std::endl;
+		//std::cout << "White: " << m_whiteCaptureScore << std::endl; //Debugging
 	}
-
 }
 
 int GameLogic::getBlackScore()
@@ -251,11 +212,9 @@ int GameLogic::getWhiteScore()
 	return m_whiteCaptureScore+m_whiteTerritoryScore;
 }
 
-
-
 bool GameLogic::aliveStoneCheck(Stone::COLOR side, std::vector<std::vector<Stone>>& stonePositions2d, int x, int y)
 {
-	// Side is the color we look if its dead or not.
+	// Side is the color we look for if it's dead or not.
 
 	//Check if out of bounds.
 	if (x > m_currentBoardSize - 1 || x < 0 || y > m_currentBoardSize -1 || y < 0)
@@ -271,7 +230,7 @@ bool GameLogic::aliveStoneCheck(Stone::COLOR side, std::vector<std::vector<Stone
 	if (stonePositions2d[x][y].getSide() != side)
 		return false; //That x,y coord does NOT have a liberty (or own stone) so return false.
 
-	//recursive search for more stones of "side"
+	//recursive search for more stones of "side". Checking 4 directions around the current x,y coord
 	bool retVal = aliveStoneCheck(side, stonePositions2d, x - 1, y);
 	retVal |= aliveStoneCheck(side, stonePositions2d, x + 1, y);
 	retVal |= aliveStoneCheck(side, stonePositions2d, x, y - 1);
@@ -301,7 +260,6 @@ bool GameLogic::floodFillArea(Stone::COLOR TargetSide,
 	if (stoneVector[x][y].getSide() != TargetSide)
 		return false;
 
-
 	// Have an if statment that if at the coords of the replacmentstone has the same type of stone in the normal stone vector then just return 
 	// Do this to avoid drawing same color area on same color stones.
 	if (replacmentSide == stoneVector[x][y].getSide() && replacmentSide != Stone::COLOR::NO_STONE)
@@ -311,12 +269,9 @@ bool GameLogic::floodFillArea(Stone::COLOR TargetSide,
 	ScoreStoneVector[x][y].setSide(replacmentSide);
 	// quick hack to just move the origin of the stons to the center of the stone instead of the top left corner (makes scaling easier later)
 	float originOffset = 9.5;
-	ScoreStoneVector[x][y].setOrigin(originOffset, originOffset);
-	//
-	ScoreStoneVector[x][y]
-		.setPosition(19 * x + originOffset, 19 * y + originOffset);
+	ScoreStoneVector[x][y].setOrigin(originOffset, originOffset);	
+	ScoreStoneVector[x][y].setPosition(19 * x + originOffset, 19 * y + originOffset);
 	ScoreStoneVector[x][y].setSprite(replacmentSide);
-
 
 	//recursive search for more stones of "side"
 	bool retVal = floodFillArea(TargetSide, replacmentSide, stoneVector,ScoreStoneVector, x - 1, y);
@@ -324,8 +279,6 @@ bool GameLogic::floodFillArea(Stone::COLOR TargetSide,
 	retVal |= floodFillArea(TargetSide, replacmentSide, stoneVector, ScoreStoneVector, x, y - 1);
 	retVal |= floodFillArea(TargetSide, replacmentSide, stoneVector, ScoreStoneVector, x, y + 1);
 	return retVal;
-
-	return false;
 }
 
 void GameLogic::resetVisitedArray(int boardSize)
@@ -346,7 +299,6 @@ void GameLogic::addTerritoryScore(Stone::COLOR side, int scoreToAdd)
 
 void GameLogic::setWinner()
 {
-
 	if ((m_blackCaptureScore + m_blackTerritoryScore) > (m_whiteCaptureScore + m_whiteTerritoryScore))
 	{
 		m_winner = Stone::COLOR::BLACK;
@@ -357,7 +309,6 @@ void GameLogic::setWinner()
 	}
 	else
 		m_winner = Stone::COLOR::NO_STONE;
-	
 }
 
 Stone::COLOR GameLogic::getWinner()
@@ -377,5 +328,4 @@ void GameLogic::resetEverything()
 void GameLogic::revertCapturedStone(std::vector<std::vector<Stone>>& stonePositions2d, Stone::COLOR capturedStoneSide)
 {
 	stonePositions2d[dataKo.possibleKoPos.x][dataKo.possibleKoPos.y].setSide(capturedStoneSide);
-	
 }

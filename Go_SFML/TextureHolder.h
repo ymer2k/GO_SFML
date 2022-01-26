@@ -5,7 +5,6 @@
 #include <SFML/Graphics.hpp>
 // class structure taken from SFML Game Development book
 
-
 class TextureHolder
 {
 
@@ -16,7 +15,6 @@ public:
 	{
 		Stone,
 		Board,
-		Toad,
 		Pass,
 		PassIcon,
 		StoneBlack,

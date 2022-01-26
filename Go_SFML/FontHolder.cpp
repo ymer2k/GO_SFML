@@ -9,10 +9,9 @@ void FontHolder::load(FontID id, const std::string& filename)
 	std::unique_ptr<sf::Font> font(new sf::Font()); // Create a unique pointer of type sf::Texture and allocate space for a sf::Texture
 	font->loadFromFile(filename); // load the texture from the given filename
 
-	//Use this to remove the blurrines (make sure the font size is exactly 10.
+	//Use this to remove the blurrines (make sure the font size is exactly 10).
 	// getTexture(10) is the font size.
 	const_cast<sf::Texture&>(font->getTexture(10)).setSmooth(false); 
-
 
 	// insert into map, move actually moves the texture pointer into the map and texture should become "empty".
 	// we do this instead of copying.
