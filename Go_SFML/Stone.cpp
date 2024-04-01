@@ -1,20 +1,30 @@
 #include "Stone.h"
 
+//Stone::Stone(TextureHolder &texture, COLOR side, float x, float y, float scale) : //TODO Change int x, int y to sf::vector2i
+//	m_texture(texture)
+//	,m_x(x)
+//	,m_y(y)
+//	,m_side(side)
+//	,m_pieceTexture()
+//	,m_pieceTextureSize()
+//	,m_scale(scale)
+//{
+//	loadSprite();
+//	setPosition(m_x,m_y);
+//}
 
-
-
-Stone::Stone(TextureHolder &texture, COLOR side, float x, float y, float scale) : //TODO Change int x, int y to sf::vector2i
-	m_texture(texture)
-	,m_x(x)
-	,m_y(y)
-	,m_side(side)
-	,m_pieceTexture()
-	,m_pieceTextureSize()
-	,m_scale(scale)
+Stone::Stone(COLOR side, float x, float y, float scale):
+	 m_x(x)
+	, m_y(y)
+	, m_side(side)
+	, m_pieceTexture()
+	, m_pieceTextureSize()
+	, m_scale(scale)
 {
-	loadSprite();
-	setPosition(m_x,m_y);
+
+	setPosition(m_x, m_y);
 }
+
 
 sf::Sprite Stone::getStoneSprite()
 {
@@ -41,12 +51,12 @@ void Stone::setSprite(Stone::COLOR side)
 		m_stoneSprite.setTextureRect(sf::IntRect(0, 0, m_pieceTextureSize.x, m_pieceTextureSize.y));
 }
 
-void Stone::loadSprite()
+void Stone::loadSprite(TextureHolder& texture)
 {
 	//For sprite 
-	m_stoneSprite.setTexture(m_texture.get(TextureHolder::ID::Stone));
+	m_stoneSprite.setTexture(texture.get(TextureHolder::ID::Stone));
 
-	m_pieceTextureSize = m_texture.get(TextureHolder::ID::Stone).getSize();
+	m_pieceTextureSize = texture.get(TextureHolder::ID::Stone).getSize();
 	//here we split the texture into pieces.
 	m_pieceTextureSize.x /= 2;
 	m_pieceTextureSize.y /= 1; //because only one row :)
@@ -63,6 +73,7 @@ void Stone::loadSprite()
 	// Set scale of sprite
 	m_stoneSprite.setScale(m_scale, m_scale);
 }
+
 
 void Stone::setPosition(float x, float y)
 {

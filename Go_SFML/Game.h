@@ -1,5 +1,6 @@
 #pragma once
 #include <SFML/Graphics.hpp>
+#include <SFML/Network.hpp>
 #include "Board.h"
 #include "Stone.h"
 #include "TextureHolder.h"
@@ -9,6 +10,7 @@
 #include "GameLogic.h"
 #include <memory>
 #include "BaseSprite.h"
+#include "TextBox.h"
 
 class Game
 {
@@ -63,6 +65,10 @@ private:
 	// choose BoardSizeFunctionality
 	//void handleBoardSizeFunctionality()
 
+	// Check if mousecoords are within the bounds
+	bool checkBounds(sf::Vector2f mouseCoords, sf::FloatRect bounds);
+	bool checkBounds(sf::Vector2i mouseCoords, sf::FloatRect bounds);
+
 
 	// Member variables
 	Board m_currentBoard;
@@ -102,7 +108,11 @@ private:
 	std::vector<TextStrings> m_textVector;  // size for 10 text objects
 
 	// last click converted to world position.
-	sf::Vector2f m_worldMousePos;
+	sf::Vector2f m_worldMousePosClick;
+
+	// Current mouse position
+	sf::Vector2i m_worldMousePos;
+
 
 	// flag if player has passed or not. SHould be moved to the GameLogic class
 	bool m_blackPassed; 
@@ -112,5 +122,37 @@ private:
 
 	// Keep track of whitch GameState we are in, Gameplay, scorephase etc.
 	GameLogic::GameState m_currentGameState;
+
+	// Hold text vectors
+	std::vector<sf::Text> m_localOrOnlineTexts;
+	std::vector<sf::Text> m_hostOrJoinTexts;
+
+	// Text Variables
+	sf::Text m_enterIp;
+
+	// Stone variables used for Menu
+	Stone m_whiteStone;
+	Stone m_blackStone;
+
+	Textbox m_textBox;
+
+	bool m_isEnterPressed;
+	bool m_isOnlineGame;
+
+
+	// Network related
+	sf::IpAddress m_ipAddress;
+	std::string m_ipAddressString;
+	sf::TcpSocket m_socket;
+	char m_receiveBuffer[2000]; // receive buffer
+	std::size_t m_receivedSize;
+	char m_connectionType; // Server or Client
+	char m_mode; //Receive or Send;
+	std::string m_text;
+	sf::TcpListener m_listener;
+
+
+
+
 };
 

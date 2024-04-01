@@ -32,11 +32,21 @@ int main()
             //We stay in this loop and update the game without rendering until the condition returns false.
             timeSinceLastUpdate -= TimePerFrame;
 
+            /*
+            * //This only ran the update function on a click  I removed it. I might have done it because I had that the click registers on press down and not on the release so immediatly
+            * //after choosing a board size we got a click on the board and this was a simple fix?
             if (currentGame.interact(world.window) || first) // Update the screen only on event, makes the timeframes useless.
             {
-                currentGame.update(world.window, GameState); //Handles all the game logic from here
-                first = false; // Update on click so first screen will not be shown unless we automatically show first.
+            currentGame.update(world.window, GameState); //Handles all the game logic from here
+            first = false; // Update on click so first screen will not be shown unless we automatically show first.
             }
+            */
+
+
+            currentGame.interact(world.window);
+            currentGame.update(world.window, GameState); //Handles all the game logic from here
+            first = false; // Update on click so first screen will not be shown unless we automatically show first.
+
         }
 
         world.window.clear();

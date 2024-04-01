@@ -3,6 +3,7 @@
 #include <cmath>
 #include <string>
 
+
 Game::Game()
     : m_passButton(m_textures)
     , m_passIcon(m_textures)
@@ -14,10 +15,72 @@ Game::Game()
     , m_19x19Button(m_textures)
     , m_blackPassed(0)
     , m_whitePassed(0)
-    , m_currentGameState(GameLogic::GameState::TitleScreen)
+    , m_currentGameState(GameLogic::GameState::ChooseLocalOrOnline)
     , m_currentside(Stone::COLOR::BLACK)
+    , m_whiteStone(Stone::COLOR::WHITE, 200 + 1, 100 + 1, 1)
+    , m_blackStone(Stone::COLOR::BLACK, 279 + 1, 100 + 1, 1)
+    , m_textBox(10,sf::Color::White,true)
+    , m_isEnterPressed(false)
+    , m_mode('0')
+    , m_isOnlineGame(false)
+
 
 {
+    // Load stone texture
+    sf::Image tempImage;
+    tempImage.loadFromFile("Sprites/white_black.png");
+    tempImage.createMaskFromColor(sf::Color::White);
+    m_textures.load(TextureHolder::ID::Stone, tempImage);
+
+    m_whiteStone.loadSprite(m_textures);
+    m_blackStone.loadSprite(m_textures);
+
+
+    //Load text font
+    m_fonts.load(FontHolder::FontID::PixelFont, "Fonts/slkscre.ttf");
+
+    sf::Text local;
+    local.setFont(m_fonts.get(FontHolder::FontID::PixelFont));
+    local.setPosition(230, 150);
+    local.setFillColor(sf::Color::White);
+    local.setString("LOCAL");
+    local.setCharacterSize(10);
+    m_localOrOnlineTexts.emplace_back(local);
+
+    sf::Text online;
+    online.setFont(m_fonts.get(FontHolder::FontID::PixelFont));
+    online.setPosition(230, 170);
+    online.setFillColor(sf::Color::White);
+    online.setString("ONLINE");
+    online.setCharacterSize(10);
+    m_localOrOnlineTexts.emplace_back(online);
+
+    sf::Text hostGame;
+    hostGame.setFont(m_fonts.get(FontHolder::FontID::PixelFont));
+    hostGame.setPosition(230, 150);
+    hostGame.setFillColor(sf::Color::White);
+    hostGame.setString("HOST GAME");
+    hostGame.setCharacterSize(10);
+    m_hostOrJoinTexts.emplace_back(hostGame);
+
+    sf::Text joinGame;
+    joinGame.setFont(m_fonts.get(FontHolder::FontID::PixelFont));
+    joinGame.setPosition(230, 170);
+    joinGame.setFillColor(sf::Color::White);
+    joinGame.setString("JOIN GAME");
+    joinGame.setCharacterSize(10);
+    m_hostOrJoinTexts.emplace_back(joinGame);
+
+    m_enterIp.setFont(m_fonts.get(FontHolder::FontID::PixelFont));
+    m_enterIp.setPosition(0,0);
+    m_enterIp.setFillColor(sf::Color::White);
+    m_enterIp.setString("Enter IP Address:");
+    m_enterIp.setCharacterSize(10);
+
+
+    m_textBox.setFont(m_fonts.get(FontHolder::FontID::PixelFont));
+    m_textBox.setPosition({ 135,0 });
+
 }
 
 bool Game::interact(sf::RenderWindow & window)
@@ -28,27 +91,53 @@ bool Game::interact(sf::RenderWindow & window)
         if (event.type == sf::Event::Closed)
             window.close();
 
-        if (event.type == sf::Event::MouseButtonPressed)
+        if (m_currentGameState == GameLogic::GameState::EnterIpAddress)
         {
-            if (event.mouseButton.button == sf::Mouse::Left)
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Return))
             {
+                std::cout << "IP ACCEPTED" << std::endl;
+                m_isEnterPressed = true;
+            }
+            else
+            {
+                m_isEnterPressed = false;
+            }
+
+            if (event.type == sf::Event::TextEntered)
+            {
+                m_textBox.typedOn(event);
+            }
+        }
+
+
+        if (event.type == sf::Event::MouseButtonReleased)
+        {
+            //if (event.mouseButton.button == sf::Mouse::Left)
+            //{
+                std::cout << "the LEFT button was pressed" << std::endl;
                 /* Debugging
                 std::cout << "the LEFT button was pressed" << std::endl;
                 std::cout << "Pixel System mouse x: " << event.mouseButton.x << std::endl;
                 std::cout << "Pixel System mouse y: " << event.mouseButton.y << std::endl;
                 */
                 sf::Vector2i mousePos(event.mouseButton.x, event.mouseButton.y);
-                m_worldMousePos = window.mapPixelToCoords(mousePos);
+                m_worldMousePosClick = window.mapPixelToCoords(mousePos);
                 /* Debugging
                 std::cout << "Coords System mouse x: " << std::round(m_worldMousePos.x) << std::endl;
                 std::cout << "Coords System mouse y: " << std::round(m_worldMousePos.y) << std::endl;
                 */
-                return true;
-            }
+                //return true;
+            //}
             return true;
         }
         else
+        {
+            m_worldMousePosClick = sf::Vector2f(-1, -1); // reset
             return false;
+        }
+
+
+
 
     }
     return false;
@@ -56,12 +145,57 @@ bool Game::interact(sf::RenderWindow & window)
 
 void Game::drawGame(sf::RenderWindow& window)
 {
+    if (m_currentGameState == GameLogic::GameState::ChooseLocalOrOnline)
+    {
+        for (auto text : m_localOrOnlineTexts)
+        {
+            window.draw(text);
+        }
+    }
 
-    if (m_currentGameState == GameLogic::GameState::TitleScreen)
+    if (m_currentGameState == GameLogic::GameState::ChooseHostOrJoin)
+    {
+        for (auto text : m_hostOrJoinTexts)
+        {
+            window.draw(text);
+        }
+    }
+
+    if (m_currentGameState == GameLogic::GameState::ChooseBlackOrWhite)
+    {
+
+        // Define a white square
+        sf::RectangleShape square(sf::Vector2f(100.f, 21)); // Size of the square
+        square.setPosition(200, 100);
+        square.setFillColor(sf::Color::White); // Set color to white
+        window.draw(square);
+
+        // Define the vertical line
+        sf::VertexArray line(sf::Lines, 2); // Two vertices for a line segment
+
+        // Set the position and color of the vertices
+        line[0].position = sf::Vector2f(250, 100.f); // Position of the first vertex
+        line[0].color = sf::Color::Black; // Color of the line
+        line[1].position = sf::Vector2f(250.f, 122.f); // Position of the second vertex
+        line[1].color = sf::Color::Black; // Color of the line
+
+        window.draw(line);
+
+        window.draw(m_whiteStone.getStoneSprite());
+        window.draw(m_blackStone.getStoneSprite());
+    }
+
+    if (m_currentGameState == GameLogic::GameState::ChooseBoardSizeScreen)
     {
         window.draw(m_9x9Button.getSprite());
         window.draw(m_13x13Button.getSprite());
         window.draw(m_19x19Button.getSprite());
+    }
+
+    if (m_currentGameState == GameLogic::GameState::EnterIpAddress)
+    {
+        window.draw(m_enterIp);
+        m_textBox.drawTo(window);
     }
 
     if (m_currentGameState == GameLogic::GameState::GamePlay)
@@ -129,13 +263,83 @@ void Game::drawGame(sf::RenderWindow& window)
 
 void Game::update(sf::RenderWindow& window, GameLogic& GameState)
 {
-    if (m_currentGameState == GameLogic::GameState::TitleScreen)
+    if (m_currentGameState == GameLogic::GameState::ChooseLocalOrOnline)
+    {
+        for (auto& text : m_localOrOnlineTexts)
+        {
+            if (checkBounds(m_worldMousePosClick, text.getGlobalBounds()))
+            {
+                m_worldMousePosClick = sf::Vector2f(-1, -1); // reset
+                sf::String string = text.getString();
+                if (string == "LOCAL")
+                {
+                    std::cout << "Clicked LOCAL!" << std::endl;
+                    m_currentGameState = GameLogic::GameState::ChooseBoardSizeScreen;
+                }
+                else if (string == "ONLINE")
+                {
+                    std::cout << "Clicked ONLINE" << std::endl;
+                    m_currentGameState = GameLogic::GameState::ChooseHostOrJoin;
+                }  
+
+                //return;
+            }
+        }
+    }
+
+    if (m_currentGameState == GameLogic::GameState::ChooseHostOrJoin)
+    {
+        for (auto& text : m_hostOrJoinTexts)
+        {
+            if (checkBounds(m_worldMousePosClick, text.getGlobalBounds()))
+            {
+                m_worldMousePosClick = sf::Vector2f(-1, -1); // reset
+                sf::String string = text.getString();
+                if (string == "HOST GAME")
+                {
+                    std::cout << "Clicked HOST GAME!" << std::endl;
+
+                    m_isOnlineGame = true;
+                    std::cout << "Wait until client has connected" << std::endl;
+                    m_currentGameState = GameLogic::GameState::ChooseBlackOrWhite;
+                }
+                else if (string == "JOIN GAME")
+                {
+                    std::cout << "Clicked JOIN GAME!" << std::endl;
+                    m_currentGameState = GameLogic::GameState::EnterIpAddress;
+                }
+
+                //return;
+            }
+        }
+    }
+
+
+    if (m_currentGameState == GameLogic::GameState::ChooseBlackOrWhite)
+    {
+        if (checkBounds(m_worldMousePosClick, m_whiteStone.getStoneSprite().getGlobalBounds()))
+        {
+            m_worldMousePosClick = sf::Vector2f(-1, -1); // reset
+            std::cout << "Clicked WHITE STONE!" << std::endl;
+            m_currentGameState = GameLogic::GameState::ChooseBoardSizeScreen;
+        }
+        else if (checkBounds(m_worldMousePosClick, m_blackStone.getStoneSprite().getGlobalBounds()))
+        {
+            m_worldMousePosClick = sf::Vector2f(-1, -1); // reset
+            std::cout << "Clicked BLACK STONE!" << std::endl;
+            m_currentGameState = GameLogic::GameState::ChooseBoardSizeScreen;
+        }
+    }
+
+
+
+    if (m_currentGameState == GameLogic::GameState::ChooseBoardSizeScreen)
     {
         static int first = 1;
 
         if (first)
         {
-            // initilize the Board size buttons. (we need to do this first before we initialise Stone vector and text etc.
+            // initilize the Board size buttons. (we need to do this first before we initialise Stone vector and text etc. TODO: Move to constructor.
             initBaseSpriteObject(m_9x9Button, "Sprites/9x9.png", TextureHolder::ID::NINE, 2, sf::Vector2i(100, 100));
             initBaseSpriteObject(m_13x13Button, "Sprites/13x13.png", TextureHolder::ID::THIRTEEN, 2, sf::Vector2i(200, 100));
             initBaseSpriteObject(m_19x19Button, "Sprites/19x19.png", TextureHolder::ID::NINETEEN, 2, sf::Vector2i(320, 100));
@@ -154,9 +358,52 @@ void Game::update(sf::RenderWindow& window, GameLogic& GameState)
             initBaseSpriteObject(m_doneButton, "Sprites/doneButton.png", TextureHolder::ID::Done, 0.1, sf::Vector2i(m_textVector[SCORING_PHASE].getText().getPosition().x + 20, m_textVector[SCORING_PHASE].getText().getPosition().y + 5));
             initBaseSpriteObject(m_yesButton, "Sprites/yesButton.png", TextureHolder::ID::Yes, 0.1, sf::Vector2i(m_textVector[PLAY_AGAIN].getText().getPosition().x - 10, m_textVector[PLAY_AGAIN].getText().getPosition().y));
             initBaseSpriteObject(m_noButton, "Sprites/noButton.png", TextureHolder::ID::No, 0.1, sf::Vector2i(m_textVector[PLAY_AGAIN].getText().getPosition().x + 40, m_textVector[PLAY_AGAIN].getText().getPosition().y));
+            m_worldMousePosClick = sf::Vector2f(-1, -1); // reset to avoid placing a stone when going into GamePlay state.
+        }
+        if (m_isOnlineGame)
+        {
+            m_currentGameState = GameLogic::GameState::WaitForOpponent;
         }
         return;
     }
+
+    if (m_currentGameState == GameLogic::GameState::WaitForOpponent)
+    {
+        // Setup server
+        m_listener.listen(2020);// Choose any public port
+        m_listener.accept(m_socket); // Program will halt execution at that line until a client connects to the server
+        m_text += "Server";
+        m_mode = 's'; //Used for testing "send"
+
+        m_socket.send(m_text.c_str(), m_text.length() + 1); // send msg to connected client
+        m_socket.receive(m_receiveBuffer, sizeof(m_receiveBuffer), m_receivedSize);
+        std::cout << m_receiveBuffer << std::endl;
+    }
+    
+
+    if (m_currentGameState == GameLogic::GameState::EnterIpAddress)
+    {
+        if (m_isEnterPressed)
+        {
+            m_ipAddress = sf::IpAddress(m_textBox.getText());
+            sf::Socket::Status socketStatus = m_socket.connect(m_ipAddress, 2020);
+            m_text += "Client";
+            m_mode = 's';
+
+            m_socket.send(m_text.c_str(), m_text.length() + 1); // send msg to connected client
+            m_socket.receive(m_receiveBuffer, sizeof(m_receiveBuffer), m_receivedSize);
+            std::cout << m_receiveBuffer << std::endl;
+
+            if (socketStatus != sf::Socket::Status::Error) // If connection established
+            {
+
+
+                m_currentGameState = GameLogic::GameState::InitializeOnlineGame;
+
+            }
+        }
+    }
+
 
     if (m_currentGameState == GameLogic::GameState::GamePlay)
     {
@@ -164,6 +411,7 @@ void Game::update(sf::RenderWindow& window, GameLogic& GameState)
         Game::handleMakingMoveLogic(window, GameState);
         GameState.setWinner(); // Set current winner if the game would finish without counting territory
         m_currentside = GameState.getCurrentSide();
+        m_worldMousePosClick = sf::Vector2f(-1, -1); // reset
         return;
     }
 
@@ -172,7 +420,7 @@ void Game::update(sf::RenderWindow& window, GameLogic& GameState)
         // put into function, handle Pressing DONE button functionality
         sf::FloatRect doneButtonBounds = m_doneButton.getSprite().getGlobalBounds();
 
-        if (doneButtonBounds.contains(m_worldMousePos))
+        if (doneButtonBounds.contains(m_worldMousePosClick))
         {
             //Go to final Winner presenter screen!
             m_currentGameState = GameLogic::GameState::PresentWinner;
@@ -180,7 +428,7 @@ void Game::update(sf::RenderWindow& window, GameLogic& GameState)
         }
 
         // put into function, handle score counting functionality
-        sf::Vector2i clickedBoardPositionIndex(GameState.findClickedBoardPositionIndex(m_worldMousePos, m_currentBoard, m_stonePositions2d[0][0].getStonePixelSize()));
+        sf::Vector2i clickedBoardPositionIndex(GameState.findClickedBoardPositionIndex(m_worldMousePosClick, m_currentBoard, m_stonePositions2d[0][0].getStonePixelSize()));
 
         //Return if clicked outside of the Board, //Later we will have buttons like Resign etc so then this would have to change.
         if (clickedBoardPositionIndex.x == -1)
@@ -239,6 +487,7 @@ void Game::update(sf::RenderWindow& window, GameLogic& GameState)
         updateTextScore(GameState);
         // Set player with highest score as winner to show when we press DONE
         GameState.setWinner();
+        m_worldMousePosClick = sf::Vector2f(-1, -1); // reset
     }
 
     if (m_currentGameState == GameLogic::GameState::PresentWinner)
@@ -247,7 +496,7 @@ void Game::update(sf::RenderWindow& window, GameLogic& GameState)
         sf::FloatRect yesButtonBounds = m_yesButton.getSprite().getGlobalBounds();
         sf::FloatRect noButtonBounds = m_noButton.getSprite().getGlobalBounds();
 
-        if (yesButtonBounds.contains(m_worldMousePos))
+        if (yesButtonBounds.contains(m_worldMousePosClick))
         {
             // Reset everything!
             // put into a function reset function
@@ -263,11 +512,12 @@ void Game::update(sf::RenderWindow& window, GameLogic& GameState)
             }
         }
 
-        if (noButtonBounds.contains(m_worldMousePos))
+        if (noButtonBounds.contains(m_worldMousePosClick))
         {
             // close the screen
             window.close();
         }
+        m_worldMousePosClick = sf::Vector2f(-1, -1); // reset
     }
 }
 
@@ -302,10 +552,6 @@ void Game::updateWinnerText(GameLogic& GameState)
 void Game::initStoneVectors()
 {
     //Put this in a function (init Stones)
-    sf::Image tempImage;
-    tempImage.loadFromFile("Sprites/white_black.png");
-    tempImage.createMaskFromColor(sf::Color::White);
-    m_textures.load(TextureHolder::ID::Stone, tempImage);
       
     // resize the outer vector
     m_stonePositions2d.resize((int)m_currentBoard.getCurrentBoardSize());
@@ -313,8 +559,16 @@ void Game::initStoneVectors()
     // resize in the inner vectors and fill every position with a Stone Object. (have to do all this because I dont have a default constructor)
     for (int row = 0; row < (int)m_currentBoard.getCurrentBoardSize(); row++)
     {
-        m_stonePositions2d[row].resize((int)m_currentBoard.getCurrentBoardSize(), Stone(m_textures, Stone::COLOR::NO_STONE, 1, 1, 1));
-        m_scoreStonePositions2d[row].resize((int)m_currentBoard.getCurrentBoardSize(), Stone(m_textures, Stone::COLOR::NO_STONE, 1, 1, 1));
+        m_stonePositions2d[row].resize((int)m_currentBoard.getCurrentBoardSize(), Stone(Stone::COLOR::NO_STONE, 1, 1, 1));
+        m_scoreStonePositions2d[row].resize((int)m_currentBoard.getCurrentBoardSize(), Stone(Stone::COLOR::NO_STONE, 1, 1, 1));
+    }
+
+    // We dont load the texture in the constructor anymore so we have to call the loadSprite function and send in the texture here instead.
+    for (int x = 0; x < (int)m_currentBoard.getCurrentBoardSize(); x++) for (int y = 0; y < (int)m_currentBoard.getCurrentBoardSize(); y++)
+    {
+        m_scoreStonePositions2d[x][y].loadSprite(m_textures);
+        m_stonePositions2d[x][y].loadSprite(m_textures);
+
     }
 }
 
@@ -332,8 +586,7 @@ void Game::initBaseSpriteObject(BaseSprite & sprite,const std::string& filename,
 
 void Game::initText()
 {
-    //Load text font
-    m_fonts.load(FontHolder::FontID::PixelFont, "Fonts/slkscre.ttf");
+
     //Create and put text in array  
 
     TextStrings blackText(m_fonts, "BLACK: 0", sf::Color::White, 10, sf::Text::Bold, sf::Vector2u(m_currentBoard.getBoardPixelSize().x + 5, 0)); //boardTextureSize.x/10, boardTextureSize.y*1.05));
@@ -360,19 +613,19 @@ bool Game::handleBoardSizeButtonFunctionality()
     sf::FloatRect v13x13ButtonBounds = m_13x13Button.getSprite().getGlobalBounds();
     sf::FloatRect v19x19ButtonBounds = m_19x19Button.getSprite().getGlobalBounds();
 
-    if (v9x9ButtonBounds.contains(m_worldMousePos))
+    if (v9x9ButtonBounds.contains(m_worldMousePosClick))
     {
         m_currentBoard.selectBoardSize(BOARDSIZE::BOARD_9x9);
         m_currentGameState = GameLogic::GameState::GamePlay;
         return true;
     }
-    else if (v13x13ButtonBounds.contains(m_worldMousePos))
+    else if (v13x13ButtonBounds.contains(m_worldMousePosClick))
     {
         m_currentBoard.selectBoardSize(BOARDSIZE::BOARD_13x13);
         m_currentGameState = GameLogic::GameState::GamePlay;
         return true;
     }
-    else if (v19x19ButtonBounds.contains(m_worldMousePos))
+    else if (v19x19ButtonBounds.contains(m_worldMousePosClick))
     {
         m_currentBoard.selectBoardSize(BOARDSIZE::BOARD_19x19);
         m_currentGameState = GameLogic::GameState::GamePlay;
@@ -383,11 +636,36 @@ bool Game::handleBoardSizeButtonFunctionality()
 
 }
 
+bool Game::checkBounds(sf::Vector2f mouseCoords, sf::FloatRect bounds)
+{
+    if (bounds.contains(mouseCoords))
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+bool Game::checkBounds(sf::Vector2i mouseCoords, sf::FloatRect bounds)
+{
+    sf::Vector2f temp(mouseCoords);
+    if (bounds.contains(temp))
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
 void Game::handleMakingMoveLogic(sf::RenderWindow& window, GameLogic& GameState)
 {
     //Create gameLogic
     //Get the corresponding Board Index of the click.
-    sf::Vector2i clickedBoardPositionIndex(GameState.findClickedBoardPositionIndex(m_worldMousePos, m_currentBoard, m_stonePositions2d[0][0].getStonePixelSize()));
+    sf::Vector2i clickedBoardPositionIndex(GameState.findClickedBoardPositionIndex(m_worldMousePosClick, m_currentBoard, m_stonePositions2d[0][0].getStonePixelSize()));
 
     //Return if clicked outside of the Board, //Later we will have buttons like Resign etc so then this would have to change.
     if (clickedBoardPositionIndex.x == -1)
@@ -431,7 +709,7 @@ void Game::handleMakingMoveLogic(sf::RenderWindow& window, GameLogic& GameState)
     //Check if the move just made caused any dead stones for the opponent.
     if (GameState.getCurrentSide() == Stone::COLOR::BLACK) // Black made a move, remove dead stones for white
     {
-        // If no stones where killed AND the move was a possible suicide move then revert the move and simply return because...
+        // If no stones were killed AND the move was a possible suicide move then revert the move and simply return because...
         // ... It is an illegal move.
         nrOfDeadStones = GameState.removeDeadStones(Stone::COLOR::WHITE, static_cast<int>(m_currentBoard.getCurrentBoardSize()), m_stonePositions2d, 0);
         if (!nrOfDeadStones && possibleSuicideMove)
@@ -498,7 +776,7 @@ void Game::handlePassFunctionality(GameLogic& GameState)
     //Handle pass functionality
     sf::FloatRect passButtonBounds = m_passButton.getSprite().getGlobalBounds();
 
-    if (passButtonBounds.contains(m_worldMousePos))
+    if (passButtonBounds.contains(m_worldMousePosClick))
     {
         //Set players turn that clicked pass flag to true.
         // In drawGame have a if statment check if flags are true and if true then draw pass sign.
@@ -525,7 +803,7 @@ void Game::handleDoneButtonFunctionality(GameLogic& GameState)
     //Handle Done button functionality
     sf::FloatRect doneButtonBounds = m_doneButton.getSprite().getGlobalBounds();
 
-    if (doneButtonBounds.contains(m_worldMousePos))
+    if (doneButtonBounds.contains(m_worldMousePosClick))
     {
         m_currentGameState = GameLogic::GameState::PresentWinner;
     }

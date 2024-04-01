@@ -16,11 +16,13 @@ public:
 		WHITE_AREA
 	};
 	Stone(TextureHolder& texture, COLOR side, float x, float y, float scale);
+	Stone(COLOR side, float x, float y, float scale);
 
 	// Member variables
 
 	// Member functions
 	sf::Sprite getStoneSprite();
+	void loadSprite(TextureHolder& texture);
 	//Location getLocation();
 	COLOR getSide();
 	void setSide(Stone::COLOR side);
@@ -33,16 +35,19 @@ public:
 
 private:
 	// member functions
-	void loadSprite();
+	//void loadSprite();
+	//void loadSprite(TextureHolder& texture);
 
 	// member variables
 	COLOR m_side;
-	TextureHolder& m_texture;
+	//TextureHolder& m_texture;
 	sf::Sprite m_stoneSprite;
 	sf::Texture m_pieceTexture;
 	sf::Vector2u m_pieceTextureSize;
 	float m_x;
 	float m_y;
 	float m_scale;
+
+
 };
 

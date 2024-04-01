@@ -38,8 +38,15 @@ public:
 
 	enum class GameState
 	{
-		TitleScreen,
+		ChooseLocalOrOnline,
+		ChooseHostOrJoin,
+		ChooseBlackOrWhite,
+		EnterIpAddress,
+		InitializeOnlineGame,
+		ChooseBoardSizeScreen,
+		WaitForOpponent,
 		GamePlay,
+		GamePlayOnline,
 		ScoreCounting,
 		PresentWinner
 	};
