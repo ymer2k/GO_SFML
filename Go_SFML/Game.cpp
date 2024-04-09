@@ -23,6 +23,8 @@ Game::Game()
     , m_isEnterPressed(false)
     , m_mode('0')
     , m_isOnlineGame(false)
+    , m_serverColor(Stone::COLOR::NO_STONE)
+    , isThisServer(false)
 
 
 {
@@ -91,7 +93,7 @@ bool Game::interact(sf::RenderWindow & window)
         if (event.type == sf::Event::Closed)
             window.close();
 
-        if (m_currentGameState == GameLogic::GameState::EnterIpAddress)
+        if (m_currentGameState == GameLogic::GameState::ClientEnterIpAddress)
         {
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Return))
             {
@@ -114,9 +116,7 @@ bool Game::interact(sf::RenderWindow & window)
         {
             //if (event.mouseButton.button == sf::Mouse::Left)
             //{
-                std::cout << "the LEFT button was pressed" << std::endl;
                 /* Debugging
-                std::cout << "the LEFT button was pressed" << std::endl;
                 std::cout << "Pixel System mouse x: " << event.mouseButton.x << std::endl;
                 std::cout << "Pixel System mouse y: " << event.mouseButton.y << std::endl;
                 */
@@ -135,10 +135,6 @@ bool Game::interact(sf::RenderWindow & window)
             m_worldMousePosClick = sf::Vector2f(-1, -1); // reset
             return false;
         }
-
-
-
-
     }
     return false;
 }
@@ -192,13 +188,13 @@ void Game::drawGame(sf::RenderWindow& window)
         window.draw(m_19x19Button.getSprite());
     }
 
-    if (m_currentGameState == GameLogic::GameState::EnterIpAddress)
+    if (m_currentGameState == GameLogic::GameState::ClientEnterIpAddress)
     {
         window.draw(m_enterIp);
         m_textBox.drawTo(window);
     }
 
-    if (m_currentGameState == GameLogic::GameState::GamePlay)
+    if (m_currentGameState == GameLogic::GameState::GamePlay || m_currentGameState == GameLogic::GameState::GamePlayOnline)
     {
         drawBoard(window);
         drawStones(window);
@@ -237,7 +233,7 @@ void Game::drawGame(sf::RenderWindow& window)
         Game::drawText(window);
     }
 
-    if (m_currentGameState == GameLogic::GameState::ScoreCounting)
+    if (m_currentGameState == GameLogic::GameState::ScoreCounting || m_currentGameState == GameLogic::GameState::ScoreCountingOnline)
     {
         drawBoard(window);
         drawStones(window);
@@ -247,7 +243,7 @@ void Game::drawGame(sf::RenderWindow& window)
         window.draw(m_textVector[2].getText());
     }
 
-    if (m_currentGameState == GameLogic::GameState::PresentWinner)
+    if (m_currentGameState == GameLogic::GameState::PresentWinner || m_currentGameState == GameLogic::GameState::PresentWinnerOnline)
     {
         drawBoard(window);
         drawStones(window);
@@ -273,12 +269,10 @@ void Game::update(sf::RenderWindow& window, GameLogic& GameState)
                 sf::String string = text.getString();
                 if (string == "LOCAL")
                 {
-                    std::cout << "Clicked LOCAL!" << std::endl;
                     m_currentGameState = GameLogic::GameState::ChooseBoardSizeScreen;
                 }
                 else if (string == "ONLINE")
                 {
-                    std::cout << "Clicked ONLINE" << std::endl;
                     m_currentGameState = GameLogic::GameState::ChooseHostOrJoin;
                 }  
 
@@ -297,19 +291,15 @@ void Game::update(sf::RenderWindow& window, GameLogic& GameState)
                 sf::String string = text.getString();
                 if (string == "HOST GAME")
                 {
-                    std::cout << "Clicked HOST GAME!" << std::endl;
-
                     m_isOnlineGame = true;
+                    isThisServer = true;
                     std::cout << "Wait until client has connected" << std::endl;
                     m_currentGameState = GameLogic::GameState::ChooseBlackOrWhite;
                 }
                 else if (string == "JOIN GAME")
                 {
-                    std::cout << "Clicked JOIN GAME!" << std::endl;
-                    m_currentGameState = GameLogic::GameState::EnterIpAddress;
+                    m_currentGameState = GameLogic::GameState::ClientEnterIpAddress;
                 }
-
-                //return;
             }
         }
     }
@@ -320,13 +310,13 @@ void Game::update(sf::RenderWindow& window, GameLogic& GameState)
         if (checkBounds(m_worldMousePosClick, m_whiteStone.getStoneSprite().getGlobalBounds()))
         {
             m_worldMousePosClick = sf::Vector2f(-1, -1); // reset
-            std::cout << "Clicked WHITE STONE!" << std::endl;
+            m_serverColor = Stone::COLOR::WHITE;
             m_currentGameState = GameLogic::GameState::ChooseBoardSizeScreen;
         }
         else if (checkBounds(m_worldMousePosClick, m_blackStone.getStoneSprite().getGlobalBounds()))
         {
             m_worldMousePosClick = sf::Vector2f(-1, -1); // reset
-            std::cout << "Clicked BLACK STONE!" << std::endl;
+            m_serverColor = Stone::COLOR::BLACK;
             m_currentGameState = GameLogic::GameState::ChooseBoardSizeScreen;
         }
     }
@@ -348,146 +338,155 @@ void Game::update(sf::RenderWindow& window, GameLogic& GameState)
         }
         if (handleBoardSizeButtonFunctionality())
         {
-            // --Initilize Game--
-            // Set stone vector length
-            Game::initStoneVectors(); // Have to do it here since it depends on the board size
-            // Initilize and set text and button positions. (depends on board size)
-            Game::initText();
-            initBaseSpriteObject(m_passIcon, "Sprites/passIcon.png", TextureHolder::ID::PassIcon, 0.05, sf::Vector2i(m_textVector[BLACK].getText().getPosition().x, m_textVector[BLACK].getText().getPosition().y + 10));
-            initBaseSpriteObject(m_passButton, "Sprites/passbutton.png", TextureHolder::ID::Pass, 0.1, sf::Vector2i(m_textVector[SCORING_PHASE].getText().getPosition().x + 20, m_textVector[SCORING_PHASE].getText().getPosition().y + 5));
-            initBaseSpriteObject(m_doneButton, "Sprites/doneButton.png", TextureHolder::ID::Done, 0.1, sf::Vector2i(m_textVector[SCORING_PHASE].getText().getPosition().x + 20, m_textVector[SCORING_PHASE].getText().getPosition().y + 5));
-            initBaseSpriteObject(m_yesButton, "Sprites/yesButton.png", TextureHolder::ID::Yes, 0.1, sf::Vector2i(m_textVector[PLAY_AGAIN].getText().getPosition().x - 10, m_textVector[PLAY_AGAIN].getText().getPosition().y));
-            initBaseSpriteObject(m_noButton, "Sprites/noButton.png", TextureHolder::ID::No, 0.1, sf::Vector2i(m_textVector[PLAY_AGAIN].getText().getPosition().x + 40, m_textVector[PLAY_AGAIN].getText().getPosition().y));
-            m_worldMousePosClick = sf::Vector2f(-1, -1); // reset to avoid placing a stone when going into GamePlay state.
+            InitializeGame();
+            if (m_isOnlineGame)
+            {
+                m_currentGameState = GameLogic::GameState::ServerWaitForOpponent;
+            }
         }
-        if (m_isOnlineGame)
-        {
-            m_currentGameState = GameLogic::GameState::WaitForOpponent;
-        }
+
         return;
     }
 
-    if (m_currentGameState == GameLogic::GameState::WaitForOpponent)
+    if (m_currentGameState == GameLogic::GameState::ServerWaitForOpponent)
     {
         // Setup server
         m_listener.listen(2020);// Choose any public port
         m_listener.accept(m_socket); // Program will halt execution at that line until a client connects to the server
-        m_text += "Server";
+        m_text += " You're connected to the Server";
         m_mode = 's'; //Used for testing "send"
 
         m_socket.send(m_text.c_str(), m_text.length() + 1); // send msg to connected client
         m_socket.receive(m_receiveBuffer, sizeof(m_receiveBuffer), m_receivedSize);
         std::cout << m_receiveBuffer << std::endl;
+
+        m_currentGameState = GameLogic::GameState::ServerInitializeOnlineGame;
+    }
+
+    if (m_currentGameState == GameLogic::GameState::ServerInitializeOnlineGame)
+    {
+        //Send Board size and server color.
+        sf::Packet packet;
+        packet << (int)m_currentBoard.getCurrentBoardSize() << (int)m_serverColor;
+        m_socket.send(packet);
+        // Set who sends first in the game
+        if (m_serverColor == Stone::COLOR::BLACK)
+        {
+            m_mode = 's'; // send
+        }
+        else
+        {
+            m_mode = 'r';
+        }
+        m_currentGameState = GameLogic::GameState::GamePlayOnline;
     }
     
-
-    if (m_currentGameState == GameLogic::GameState::EnterIpAddress)
+    if (m_currentGameState == GameLogic::GameState::ClientEnterIpAddress)
     {
         if (m_isEnterPressed)
         {
             m_ipAddress = sf::IpAddress(m_textBox.getText());
             sf::Socket::Status socketStatus = m_socket.connect(m_ipAddress, 2020);
-            m_text += "Client";
+            m_text += "You're connected to the Client";
             m_mode = 's';
 
             m_socket.send(m_text.c_str(), m_text.length() + 1); // send msg to connected client
             m_socket.receive(m_receiveBuffer, sizeof(m_receiveBuffer), m_receivedSize);
             std::cout << m_receiveBuffer << std::endl;
 
-            if (socketStatus != sf::Socket::Status::Error) // If connection established
-            {
-
-
-                m_currentGameState = GameLogic::GameState::InitializeOnlineGame;
-
-            }
+            m_currentGameState = GameLogic::GameState::ClientInitializeOnlineGame;
         }
+    }
+
+    if (m_currentGameState == GameLogic::GameState::ClientInitializeOnlineGame)
+    {
+        // Recieve board size and Server color.
+        sf::Packet packet;
+        m_socket.receive(packet);
+        int unpackedBoardSize;
+        int unpackedServerColor;
+        packet >> unpackedBoardSize >> unpackedServerColor;
+        m_serverColor = (Stone::COLOR)unpackedServerColor;
+        m_currentBoard.selectBoardSize((BOARDSIZE)unpackedBoardSize);
+        InitializeGame();
+
+        // Set who sends first
+        if (m_serverColor == Stone::COLOR::BLACK)
+        {
+            m_mode = 'r'; // receive
+        }
+        else
+        {
+            m_mode = 's';
+        }
+        m_currentGameState = GameLogic::GameState::GamePlayOnline;
     }
 
 
     if (m_currentGameState == GameLogic::GameState::GamePlay)
     {
-        Game::handlePassFunctionality(GameState);
-        Game::handleMakingMoveLogic(window, GameState);
-        GameState.setWinner(); // Set current winner if the game would finish without counting territory
-        m_currentside = GameState.getCurrentSide();
+        gamePlay(GameState, window);
+        m_worldMousePosClick = sf::Vector2f(-1, -1); // reset
+        return;
+    }
+
+    if (m_currentGameState == GameLogic::GameState::GamePlayOnline)
+    {
+        //Send Current players move/click to opponent
+        if (m_mode == 's')
+        {
+            sf::Packet packet;
+            packet << m_worldMousePosClick.x << m_worldMousePosClick.y;
+            m_socket.send(packet);
+        }
+        else if (m_mode == 'r')
+        {
+            sf::Packet packet;
+            m_socket.receive(packet);
+            packet >> m_worldMousePosClick.x >> m_worldMousePosClick.y; // This will actually block the local user from making moves becaus his own mouseclicks
+            // will overwritten by the senders which will be -1,-1 until he actually presses something. Extremly bad solution but its ok.
+        }
+
+        if (gamePlayOnline(GameState, window))
+        {
+            // Move accepted or passed, swap m_mode
+            if (m_mode == 's')
+            {
+                m_mode = 'r';
+            }
+            else
+            {
+                m_mode = 's';
+            }
+        }
+
         m_worldMousePosClick = sf::Vector2f(-1, -1); // reset
         return;
     }
 
     if (m_currentGameState == GameLogic::GameState::ScoreCounting)
     {
-        // put into function, handle Pressing DONE button functionality
-        sf::FloatRect doneButtonBounds = m_doneButton.getSprite().getGlobalBounds();
+        scoreCounting(GameState);
+    }
 
-        if (doneButtonBounds.contains(m_worldMousePosClick))
+    if (m_currentGameState == GameLogic::GameState::ScoreCountingOnline)
+    {
+        //Send Current players move/click to opponent
+        sf::Packet packet;
+        packet << m_worldMousePosClick.x << m_worldMousePosClick.y;
+        m_socket.send(packet);
+
+        // Receive opponents click if its not -1 -1
+        m_socket.receive(packet);
+        float unpackedWorldMousePosClickX;
+        float unpackedWorldMousePosClickY;
+        packet >> unpackedWorldMousePosClickX >> unpackedWorldMousePosClickY;
+        if (unpackedWorldMousePosClickX != -1 || unpackedWorldMousePosClickY != -1)
         {
-            //Go to final Winner presenter screen!
-            m_currentGameState = GameLogic::GameState::PresentWinner;
-            updateWinnerText(GameState);
+            m_worldMousePosClick.x = unpackedWorldMousePosClickX;
+            m_worldMousePosClick.y = unpackedWorldMousePosClickY;
         }
-
-        // put into function, handle score counting functionality
-        sf::Vector2i clickedBoardPositionIndex(GameState.findClickedBoardPositionIndex(m_worldMousePosClick, m_currentBoard, m_stonePositions2d[0][0].getStonePixelSize()));
-
-        //Return if clicked outside of the Board, //Later we will have buttons like Resign etc so then this would have to change.
-        if (clickedBoardPositionIndex.x == -1)
-        {
-            return; //Clicked outside of the board.
-        }
-        Stone::COLOR targetSide = m_stonePositions2d[clickedBoardPositionIndex.x][clickedBoardPositionIndex.y].getSide();
-        Stone::COLOR replacementColor;
-        static int cycle = 0; // cycle through NO_STONE ->BLACK -> WHITE -> NO_STONE
-        switch(cycle)
-        {
-        case(0):
-            replacementColor = Stone::COLOR::BLACK;
-            cycle++;
-            break;
-        case(1):
-            replacementColor = Stone::COLOR::WHITE;
-            cycle++;
-            break;
-        case(2):
-            replacementColor = Stone::COLOR::NO_STONE;
-            cycle = 0;
-            break;
-        default:
-            replacementColor = Stone::COLOR::NO_STONE;
-            break;
-
-            Game::handleDoneButtonFunctionality(GameState);
-        }
-
-        //Reset m_visited;
-        GameState.resetVisitedArray((int)m_currentBoard.getCurrentBoardSize());
-        GameState.floodFillArea(targetSide, replacementColor, m_stonePositions2d, m_scoreStonePositions2d, clickedBoardPositionIndex.x, clickedBoardPositionIndex.y);
-        // Update total score with the territory score!
-        // loop through the scoring vector and count all points and add it to the respective sides score stored in GameLogic.cpp
-
-        int blacksTerritoryScore = 0;
-        int whitesTerritoryScore = 0;
-        for (int x = 0; x < (int)m_currentBoard.getCurrentBoardSize(); x++) for (int y = 0; y < (int) m_currentBoard.getCurrentBoardSize(); y++)
-        {
-            if (m_scoreStonePositions2d[x][y].getSide() == Stone::COLOR::BLACK)
-            {
-                //add score to blacks territory score
-                blacksTerritoryScore++;
-            }
-            else if (m_scoreStonePositions2d[x][y].getSide() == Stone::COLOR::WHITE)
-            {
-                // add score to Whites territory Score 
-                whitesTerritoryScore++;
-            }
-        }
-        GameState.addTerritoryScore(Stone::COLOR::BLACK, blacksTerritoryScore);
-        GameState.addTerritoryScore(Stone::COLOR::WHITE, whitesTerritoryScore);
-
-        //update the scorebut with seperate variables.
-        updateTextScore(GameState);
-        // Set player with highest score as winner to show when we press DONE
-        GameState.setWinner();
-        m_worldMousePosClick = sf::Vector2f(-1, -1); // reset
+        scoreCountingOnline(GameState);
     }
 
     if (m_currentGameState == GameLogic::GameState::PresentWinner)
@@ -519,6 +518,275 @@ void Game::update(sf::RenderWindow& window, GameLogic& GameState)
         }
         m_worldMousePosClick = sf::Vector2f(-1, -1); // reset
     }
+
+    if (m_currentGameState == GameLogic::GameState::PresentWinnerOnline)
+    {
+        //Send Current players move/click to opponent
+        sf::Packet packet;
+        packet << m_worldMousePosClick.x << m_worldMousePosClick.y;
+        m_socket.send(packet);
+
+        // Receive opponents click if its not -1 -1
+        m_socket.receive(packet);
+        float unpackedWorldMousePosClickX;
+        float unpackedWorldMousePosClickY;
+        packet >> unpackedWorldMousePosClickX >> unpackedWorldMousePosClickY;
+        if (unpackedWorldMousePosClickX != -1 || unpackedWorldMousePosClickY != -1)
+        {
+            m_worldMousePosClick.x = unpackedWorldMousePosClickX;
+            m_worldMousePosClick.y = unpackedWorldMousePosClickY;
+        }
+
+
+        // Handle "play again" button functionality and when that button is pressed reset score and vectors!
+        sf::FloatRect yesButtonBounds = m_yesButton.getSprite().getGlobalBounds();
+        sf::FloatRect noButtonBounds = m_noButton.getSprite().getGlobalBounds();
+
+        if (yesButtonBounds.contains(m_worldMousePosClick))
+        {
+            // Reset everything!
+            // put into a function reset function
+            GameState.resetEverything();
+            m_blackPassed = false;
+            m_whitePassed = false;
+            GameState.setSide(Stone::COLOR::BLACK);
+            for (int x = 0; x < (int)m_currentBoard.getCurrentBoardSize(); x++) for (int y = 0; y < (int)m_currentBoard.getCurrentBoardSize(); y++)
+            {
+                m_scoreStonePositions2d[x][y].setSide(Stone::COLOR::NO_STONE);
+                m_stonePositions2d[x][y].setSide(Stone::COLOR::NO_STONE);
+            }
+            m_currentGameState = GameLogic::GameState::GamePlayOnline;
+          
+            if (m_serverColor == Stone::COLOR::BLACK)
+            {
+                if (isThisServer)
+                {
+                    m_mode = 's'; // send
+                }
+                else
+                {
+                    m_mode = 'r';
+                }
+                
+            }
+            else // Client is Black
+            {
+                if (isThisServer)
+                {
+                    m_mode = 'r';
+                }
+                else
+                {
+                    m_mode = 's';
+                }
+            }
+        }
+
+        if (noButtonBounds.contains(m_worldMousePosClick))
+        {
+            // close the screen
+            window.close();
+        }
+        m_worldMousePosClick = sf::Vector2f(-1, -1); // reset
+    }
+}
+
+void Game::gamePlay(GameLogic& GameState, sf::RenderWindow& window)
+{
+    Game::handlePassFunctionality(GameState);
+    Game::handleMakingMoveLogic(window, GameState);
+    GameState.setWinner(); // Set current winner if the game would finish without counting territory
+    m_currentside = GameState.getCurrentSide();
+}
+
+bool Game::gamePlayOnline(GameLogic& GameState, sf::RenderWindow& window)
+{
+    bool isMoveAccepted;
+    bool isMovePassed = false;
+
+    if (Game::handlePassFunctionality(GameState))
+    {
+        isMovePassed = true;
+    }
+    if (m_blackPassed && m_whitePassed)
+    {
+        //Game over, Go to score mode.
+        m_currentGameState = GameLogic::GameState::ScoreCountingOnline;
+    }
+
+    isMoveAccepted = Game::handleMakingMoveLogic(window, GameState);
+    GameState.setWinner(); // Set current winner if the game would finish without counting territory
+    m_currentside = GameState.getCurrentSide();
+    return (isMoveAccepted || isMovePassed);
+}
+
+void Game::scoreCounting(GameLogic& GameState)
+{
+    // put into function, handle Pressing DONE button functionality
+    sf::FloatRect doneButtonBounds = m_doneButton.getSprite().getGlobalBounds();
+
+    if (doneButtonBounds.contains(m_worldMousePosClick))
+    {
+        //Go to final Winner presenter screen!
+        m_currentGameState = GameLogic::GameState::PresentWinner;
+        updateWinnerText(GameState);
+    }
+
+    // put into function, handle score counting functionality
+    sf::Vector2i clickedBoardPositionIndex(GameState.findClickedBoardPositionIndex(m_worldMousePosClick, m_currentBoard, m_stonePositions2d[0][0].getStonePixelSize()));
+
+    //Return if clicked outside of the Board, //Later we will have buttons like Resign etc so then this would have to change.
+    if (clickedBoardPositionIndex.x == -1)
+    {
+        return; //Clicked outside of the board.
+    }
+    Stone::COLOR targetSide = m_stonePositions2d[clickedBoardPositionIndex.x][clickedBoardPositionIndex.y].getSide();
+    Stone::COLOR replacementColor;
+    static int cycle = 0; // cycle through NO_STONE ->BLACK -> WHITE -> NO_STONE
+    switch (cycle)
+    {
+    case(0):
+        replacementColor = Stone::COLOR::BLACK;
+        cycle++;
+        break;
+    case(1):
+        replacementColor = Stone::COLOR::WHITE;
+        cycle++;
+        break;
+    case(2):
+        replacementColor = Stone::COLOR::NO_STONE;
+        cycle = 0;
+        break;
+    default:
+        replacementColor = Stone::COLOR::NO_STONE;
+        break;
+
+        Game::handleDoneButtonFunctionality(GameState);
+    }
+
+    GameState.resetVisitedArray((int)m_currentBoard.getCurrentBoardSize());
+    GameState.floodFillArea(targetSide, replacementColor, m_stonePositions2d, m_scoreStonePositions2d, clickedBoardPositionIndex.x, clickedBoardPositionIndex.y);
+    // Update total score with the territory score!
+    // loop through the scoring vector and count all points and add it to the respective sides score stored in GameLogic.cpp
+
+    int blacksTerritoryScore = 0;
+    int whitesTerritoryScore = 0;
+    for (int x = 0; x < (int)m_currentBoard.getCurrentBoardSize(); x++) for (int y = 0; y < (int)m_currentBoard.getCurrentBoardSize(); y++)
+    {
+        if (m_scoreStonePositions2d[x][y].getSide() == Stone::COLOR::BLACK)
+        {
+            //add score to blacks territory score
+            blacksTerritoryScore++;
+        }
+        else if (m_scoreStonePositions2d[x][y].getSide() == Stone::COLOR::WHITE)
+        {
+            // add score to Whites territory Score 
+            whitesTerritoryScore++;
+        }
+    }
+    GameState.addTerritoryScore(Stone::COLOR::BLACK, blacksTerritoryScore);
+    GameState.addTerritoryScore(Stone::COLOR::WHITE, whitesTerritoryScore);
+
+    //update the scorebut with seperate variables.
+    updateTextScore(GameState);
+    // Set player with highest score as winner to show when we press DONE
+    GameState.setWinner();
+    m_worldMousePosClick = sf::Vector2f(-1, -1); // reset
+}
+
+void Game::scoreCountingOnline(GameLogic& GameState)
+{
+    // put into function, handle Pressing DONE button functionality
+    sf::FloatRect doneButtonBounds = m_doneButton.getSprite().getGlobalBounds();
+
+    if (doneButtonBounds.contains(m_worldMousePosClick))
+    {
+        //Go to final Winner presenter screen!
+        m_currentGameState = GameLogic::GameState::PresentWinnerOnline;
+        updateWinnerText(GameState);
+    }
+
+    // put into function, handle score counting functionality
+    sf::Vector2i clickedBoardPositionIndex(GameState.findClickedBoardPositionIndex(m_worldMousePosClick, m_currentBoard, m_stonePositions2d[0][0].getStonePixelSize()));
+
+    //Return if clicked outside of the Board, //Later we will have buttons like Resign etc so then this would have to change.
+    if (clickedBoardPositionIndex.x == -1)
+    {
+        return; //Clicked outside of the board.
+    }
+    Stone::COLOR targetSide = m_stonePositions2d[clickedBoardPositionIndex.x][clickedBoardPositionIndex.y].getSide();
+    Stone::COLOR replacementColor;
+    static int cycle = 0; // cycle through NO_STONE ->BLACK -> WHITE -> NO_STONE
+    switch (cycle)
+    {
+    case(0):
+        replacementColor = Stone::COLOR::BLACK;
+        cycle++;
+        break;
+    case(1):
+        replacementColor = Stone::COLOR::WHITE;
+        cycle++;
+        break;
+    case(2):
+        replacementColor = Stone::COLOR::NO_STONE;
+        cycle = 0;
+        break;
+    default:
+        replacementColor = Stone::COLOR::NO_STONE;
+        break;
+
+        //Handle Done button functionality
+        sf::FloatRect doneButtonBounds = m_doneButton.getSprite().getGlobalBounds();
+
+        if (doneButtonBounds.contains(m_worldMousePosClick))
+        {
+            m_currentGameState = GameLogic::GameState::PresentWinner;
+        }
+    }
+
+    GameState.resetVisitedArray((int)m_currentBoard.getCurrentBoardSize());
+    GameState.floodFillArea(targetSide, replacementColor, m_stonePositions2d, m_scoreStonePositions2d, clickedBoardPositionIndex.x, clickedBoardPositionIndex.y);
+    // Update total score with the territory score!
+    // loop through the scoring vector and count all points and add it to the respective sides score stored in GameLogic.cpp
+
+    int blacksTerritoryScore = 0;
+    int whitesTerritoryScore = 0;
+    for (int x = 0; x < (int)m_currentBoard.getCurrentBoardSize(); x++) for (int y = 0; y < (int)m_currentBoard.getCurrentBoardSize(); y++)
+    {
+        if (m_scoreStonePositions2d[x][y].getSide() == Stone::COLOR::BLACK)
+        {
+            //add score to blacks territory score
+            blacksTerritoryScore++;
+        }
+        else if (m_scoreStonePositions2d[x][y].getSide() == Stone::COLOR::WHITE)
+        {
+            // add score to Whites territory Score 
+            whitesTerritoryScore++;
+        }
+    }
+    GameState.addTerritoryScore(Stone::COLOR::BLACK, blacksTerritoryScore);
+    GameState.addTerritoryScore(Stone::COLOR::WHITE, whitesTerritoryScore);
+
+    //update the scorebut with seperate variables.
+    updateTextScore(GameState);
+    // Set player with highest score as winner to show when we press DONE
+    GameState.setWinner();
+    m_worldMousePosClick = sf::Vector2f(-1, -1); // reset
+}
+
+void Game::InitializeGame()
+{
+    // --Initilize Game--
+    // Set stone vector length
+    Game::initStoneVectors(); // Have to do it here since it depends on the board size
+    // Initilize and set text and button positions. (depends on board size)
+    Game::initText();
+    initBaseSpriteObject(m_passIcon, "Sprites/passIcon.png", TextureHolder::ID::PassIcon, 0.05, sf::Vector2i(m_textVector[BLACK].getText().getPosition().x, m_textVector[BLACK].getText().getPosition().y + 10));
+    initBaseSpriteObject(m_passButton, "Sprites/passbutton.png", TextureHolder::ID::Pass, 0.1, sf::Vector2i(m_textVector[SCORING_PHASE].getText().getPosition().x + 20, m_textVector[SCORING_PHASE].getText().getPosition().y + 5));
+    initBaseSpriteObject(m_doneButton, "Sprites/doneButton.png", TextureHolder::ID::Done, 0.1, sf::Vector2i(m_textVector[SCORING_PHASE].getText().getPosition().x + 20, m_textVector[SCORING_PHASE].getText().getPosition().y + 5));
+    initBaseSpriteObject(m_yesButton, "Sprites/yesButton.png", TextureHolder::ID::Yes, 0.1, sf::Vector2i(m_textVector[PLAY_AGAIN].getText().getPosition().x - 10, m_textVector[PLAY_AGAIN].getText().getPosition().y));
+    initBaseSpriteObject(m_noButton, "Sprites/noButton.png", TextureHolder::ID::No, 0.1, sf::Vector2i(m_textVector[PLAY_AGAIN].getText().getPosition().x + 40, m_textVector[PLAY_AGAIN].getText().getPosition().y));
+    m_worldMousePosClick = sf::Vector2f(-1, -1); // reset to avoid placing a stone when going into GamePlay state.
 }
 
 void Game::drawText(sf::RenderWindow& window)
@@ -550,9 +818,7 @@ void Game::updateWinnerText(GameLogic& GameState)
 }
 
 void Game::initStoneVectors()
-{
-    //Put this in a function (init Stones)
-      
+{      
     // resize the outer vector
     m_stonePositions2d.resize((int)m_currentBoard.getCurrentBoardSize());
     m_scoreStonePositions2d.resize((int)m_currentBoard.getCurrentBoardSize());
@@ -661,16 +927,16 @@ bool Game::checkBounds(sf::Vector2i mouseCoords, sf::FloatRect bounds)
     }
 }
 
-void Game::handleMakingMoveLogic(sf::RenderWindow& window, GameLogic& GameState)
+bool Game::handleMakingMoveLogic(sf::RenderWindow& window, GameLogic& GameState)
 {
     //Create gameLogic
     //Get the corresponding Board Index of the click.
     sf::Vector2i clickedBoardPositionIndex(GameState.findClickedBoardPositionIndex(m_worldMousePosClick, m_currentBoard, m_stonePositions2d[0][0].getStonePixelSize()));
 
-    //Return if clicked outside of the Board, //Later we will have buttons like Resign etc so then this would have to change.
+    //Return if clicked outside of the Board, including pressing buttons like "PASS"
     if (clickedBoardPositionIndex.x == -1)
     {
-        return; //Clicked outside of the board.
+        return false; //Clicked outside of the board.
     }
 
     bool isSquareEmpty = GameState.checkIfSquareEmpty(m_stonePositions2d[clickedBoardPositionIndex.x][clickedBoardPositionIndex.y]);
@@ -702,7 +968,7 @@ void Game::handleMakingMoveLogic(sf::RenderWindow& window, GameLogic& GameState)
     }
     else //square not empty
     {
-        return;
+        return false;
     }
 
     int nrOfDeadStones = 0; //reset this before we start
@@ -715,7 +981,7 @@ void Game::handleMakingMoveLogic(sf::RenderWindow& window, GameLogic& GameState)
         if (!nrOfDeadStones && possibleSuicideMove)
         {
             m_stonePositions2d[clickedBoardPositionIndex.x][clickedBoardPositionIndex.y].setSide(Stone::COLOR::NO_STONE); //revert move because its a suicide move
-            return;
+            return false;
         }
         else if (nrOfDeadStones > 1) //cant be KO if more than 1 stone died.
             GameState.resetKoCoords();
@@ -726,7 +992,7 @@ void Game::handleMakingMoveLogic(sf::RenderWindow& window, GameLogic& GameState)
              // Also revert the stone that died.
             // Revert the single captured stone.
             GameState.revertCapturedStone(m_stonePositions2d, Stone::COLOR::WHITE);
-            return;
+            return false;
         }
     }
     else // White made a move, remove dead stones for Black.
@@ -735,7 +1001,7 @@ void Game::handleMakingMoveLogic(sf::RenderWindow& window, GameLogic& GameState)
         if (!nrOfDeadStones && possibleSuicideMove)
         {
             m_stonePositions2d[clickedBoardPositionIndex.x][clickedBoardPositionIndex.y].setSide(Stone::COLOR::NO_STONE);
-            return;
+            return true;
         }
         else if (nrOfDeadStones > 1) // If over one stone died then it was NOT a Ko move
             GameState.resetKoCoords();
@@ -744,7 +1010,7 @@ void Game::handleMakingMoveLogic(sf::RenderWindow& window, GameLogic& GameState)
         {
             m_stonePositions2d[clickedBoardPositionIndex.x][clickedBoardPositionIndex.y].setSide(Stone::COLOR::NO_STONE); //revert move
             GameState.revertCapturedStone(m_stonePositions2d, Stone::COLOR::BLACK);
-            return;
+            return true;
         }
     }
     GameState.updateScore(nrOfDeadStones, GameState.getCurrentSide());
@@ -771,7 +1037,7 @@ void Game::handleMakingMoveLogic(sf::RenderWindow& window, GameLogic& GameState)
     GameState.changeSide();
 }
 
-void Game::handlePassFunctionality(GameLogic& GameState)
+bool Game::handlePassFunctionality(GameLogic& GameState)
 {
     //Handle pass functionality
     sf::FloatRect passButtonBounds = m_passButton.getSprite().getGlobalBounds();
@@ -784,11 +1050,13 @@ void Game::handlePassFunctionality(GameLogic& GameState)
         {
             m_blackPassed = true;
             GameState.changeSide();
+            return true;
         }
         else
         {
             m_whitePassed = true;
             GameState.changeSide();
+            return true;
         }
     }
     if (m_blackPassed && m_whitePassed)
@@ -796,6 +1064,7 @@ void Game::handlePassFunctionality(GameLogic& GameState)
         //Game over, Go to score mode.
         m_currentGameState = GameLogic::GameState::ScoreCounting;
     }
+    return false;
 }
 
 void Game::handleDoneButtonFunctionality(GameLogic& GameState)

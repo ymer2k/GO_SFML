@@ -24,6 +24,14 @@ public:
 	// This function updates the game
 	void update(sf::RenderWindow& window,GameLogic& GameState);
 
+	void gamePlay(GameLogic& GameState, sf::RenderWindow& window);
+	bool gamePlayOnline(GameLogic& GameState, sf::RenderWindow& window);
+
+	void scoreCounting(GameLogic& GameState);
+	void scoreCountingOnline(GameLogic& GameState);
+
+	void InitializeGame();
+
 	// Used to find the right text in m_textvector
 	enum TEXTINDEX
 	{
@@ -43,10 +51,10 @@ private:
 	void drawStonesScoring(sf::RenderWindow& window);
 	// Function to update the game score.
 	void updateTextScore(GameLogic& GameState);
-	// Function to to handle all game board related things like clicks, moves, rules, points etc
-	void handleMakingMoveLogic(sf::RenderWindow& window, GameLogic& GameState);
+	// Function to to handle all game board related things like clicks, moves, rules, points etc, return true if move is accepted and false otherwise.
+	bool handleMakingMoveLogic(sf::RenderWindow& window, GameLogic& GameState);
 	// Function to handle pass functionality
-	void handlePassFunctionality(GameLogic& GameState);
+	bool handlePassFunctionality(GameLogic& GameState);
 	// Function that handle Done button functionality
 	void handleDoneButtonFunctionality(GameLogic& GameState);
 	// Draw text
@@ -150,6 +158,8 @@ private:
 	char m_mode; //Receive or Send;
 	std::string m_text;
 	sf::TcpListener m_listener;
+	Stone::COLOR m_serverColor;
+	bool isThisServer;
 
 
 

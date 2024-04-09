@@ -41,14 +41,17 @@ public:
 		ChooseLocalOrOnline,
 		ChooseHostOrJoin,
 		ChooseBlackOrWhite,
-		EnterIpAddress,
-		InitializeOnlineGame,
+		ClientEnterIpAddress,
+		ClientInitializeOnlineGame,
 		ChooseBoardSizeScreen,
-		WaitForOpponent,
+		ServerWaitForOpponent,
+		ServerInitializeOnlineGame,
 		GamePlay,
 		GamePlayOnline,
 		ScoreCounting,
-		PresentWinner
+		ScoreCountingOnline,
+		PresentWinner,
+		PresentWinnerOnline
 	};
 
 private:

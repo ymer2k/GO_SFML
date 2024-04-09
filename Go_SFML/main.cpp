@@ -43,11 +43,12 @@ int main()
             */
 
 
-            currentGame.interact(world.window);
-            currentGame.update(world.window, GameState); //Handles all the game logic from here
-            first = false; // Update on click so first screen will not be shown unless we automatically show first.
+            //currentGame.interact(world.window);
+            //currentGame.update(world.window, GameState); //Handles all the game logic from here
 
         }
+        currentGame.interact(world.window);
+        currentGame.update(world.window, GameState); //Handles all the game logic from here
 
         world.window.clear();
         currentGame.drawGame(world.window);  // does all the rednering on screen
