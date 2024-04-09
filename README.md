@@ -8,6 +8,7 @@ The classic board game Go made in C++ using SFML.
 
 ## Features
 
+- Now with Online play!
 - Choose from 3 different board sizes (9x9, 13x13, 19x19)
 - Capture, suicide rule and Ko rule implemented
 - A scoring phase to tally up territory
