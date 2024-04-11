@@ -95,15 +95,16 @@ bool Game::interact(sf::RenderWindow & window)
 
         if (m_currentGameState == GameLogic::GameState::ClientEnterIpAddress)
         {
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Return))
+            m_isEnterPressed = false;
+            if (event.type == sf::Event::KeyPressed)
             {
-                std::cout << "IP ACCEPTED" << std::endl;
-                m_isEnterPressed = true;
+                if (event.key.code == sf::Keyboard::Return)
+                {
+                    std::cout << "IP address entered..." << std::endl;
+                    m_isEnterPressed = true;
+                }
             }
-            else
-            {
-                m_isEnterPressed = false;
-            }
+
 
             if (event.type == sf::Event::TextEntered)
             {
@@ -387,14 +388,23 @@ void Game::update(sf::RenderWindow& window, GameLogic& GameState)
         {
             m_ipAddress = sf::IpAddress(m_textBox.getText());
             sf::Socket::Status socketStatus = m_socket.connect(m_ipAddress, 2020);
-            m_text += "You're connected to the Client";
-            m_mode = 's';
+            if (socketStatus != sf::Socket::Status::Error)
+            {
+                m_text += "You're connected to the Client";
+                m_mode = 's';
 
-            m_socket.send(m_text.c_str(), m_text.length() + 1); // send msg to connected client
-            m_socket.receive(m_receiveBuffer, sizeof(m_receiveBuffer), m_receivedSize);
-            std::cout << m_receiveBuffer << std::endl;
+                m_socket.send(m_text.c_str(), m_text.length() + 1); // send msg to connected client
+                m_socket.receive(m_receiveBuffer, sizeof(m_receiveBuffer), m_receivedSize);
+                std::cout << m_receiveBuffer << std::endl;
 
-            m_currentGameState = GameLogic::GameState::ClientInitializeOnlineGame;
+                m_currentGameState = GameLogic::GameState::ClientInitializeOnlineGame;
+                m_isEnterPressed = false;
+            }
+            else
+            {
+                std::cout << "Connection failed" << std::endl;
+            }
+
         }
     }
 
