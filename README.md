@@ -14,3 +14,6 @@ The classic board game Go made in C++ using SFML.
 - A scoring phase to tally up territory
 - Beautiful graphics
 
+## How to play
+Download latest release (v1.1.2), unzip files and run the exe.
+Open Port 2020 to host a game online.
