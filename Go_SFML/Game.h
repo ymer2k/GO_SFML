@@ -25,6 +25,7 @@ public:
 	void update(sf::RenderWindow& window,GameLogic& GameState);
 
 	void gamePlay(GameLogic& GameState, sf::RenderWindow& window);
+	// Return true if move is accepted or passed
 	bool gamePlayOnline(GameLogic& GameState, sf::RenderWindow& window);
 
 	void scoreCounting(GameLogic& GameState);

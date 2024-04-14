@@ -968,6 +968,7 @@ bool Game::handleMakingMoveLogic(sf::RenderWindow& window, GameLogic& GameState)
         m_stonePositions2d[clickedBoardPositionIndex.x][clickedBoardPositionIndex.y].setSide(GameState.getCurrentSide());
         m_stonePositions2d[clickedBoardPositionIndex.x][clickedBoardPositionIndex.y].setSprite(GameState.getCurrentSide());
         sf::Vector2u stoneTextureSize(m_stonePositions2d[0][0].getStonePixelSize());
+
         // quick hack to just move the origin of the stons to the center of the stone instead of the top left corner (makes scaling easier later)
         // Edit; this "hack" should be done elsewhere, not in the logic...
         float originOffset = 9.5;
@@ -1020,7 +1021,7 @@ bool Game::handleMakingMoveLogic(sf::RenderWindow& window, GameLogic& GameState)
         {
             m_stonePositions2d[clickedBoardPositionIndex.x][clickedBoardPositionIndex.y].setSide(Stone::COLOR::NO_STONE); //revert move
             GameState.revertCapturedStone(m_stonePositions2d, Stone::COLOR::BLACK);
-            return true;
+            return false;
         }
     }
     GameState.updateScore(nrOfDeadStones, GameState.getCurrentSide());
